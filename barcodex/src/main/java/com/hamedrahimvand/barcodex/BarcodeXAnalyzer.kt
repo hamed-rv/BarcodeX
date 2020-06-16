@@ -14,41 +14,35 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
  *@since 6/14/20
  */
 class QrCodeAnalyzer(
-    private val qrCodeAnalyzerCallback: QrCodeAnalayzerCallBack?
+    private val barcodeXAnalyzerCallback: BarcodeXAnalayzerCallBack?
 ) : ImageAnalysis.Analyzer {
 
 
     override fun analyze(image: ImageProxy) {
         try {
             val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_QR_CODE)
+                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
                 .build()
 
             val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
             val rotation = rotationDegreesToFirebaseRotation(image.imageInfo.rotationDegrees)
 
-            val metadata: FirebaseVisionImageMetadata = FirebaseVisionImageMetadata.Builder()
-                .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-                .setWidth(image.width)
-                .setHeight(image.height)
-                .setRotation(rotation)
-                .build()
-
-            val visionImage = FirebaseVisionImage.fromByteBuffer(image.planes[0].buffer, metadata)
+            val visionImage = FirebaseVisionImage.fromMediaImage(image.image!!,rotation)
 
             detector.detectInImage(visionImage)
                 .addOnSuccessListener { barcodes ->
-                    qrCodeAnalyzerCallback?.onQrCodesDetected(barcodes)
+                    barcodeXAnalyzerCallback?.onQrCodesDetected(barcodes)
                 }
                 .addOnFailureListener {
-                    qrCodeAnalyzerCallback?.onQrCodesFailed(it)
+                    barcodeXAnalyzerCallback?.onQrCodesFailed(it)
                 }
 
         } catch (t: Exception) {
             t.printStackTrace()
-            qrCodeAnalyzerCallback?.onQrCodesFailed(t)
+            barcodeXAnalyzerCallback?.onQrCodesFailed(t)
         }
+        image.close()
     }
 
     private fun rotationDegreesToFirebaseRotation(rotationDegrees: Int): Int {
@@ -62,7 +56,7 @@ class QrCodeAnalyzer(
     }
 }
 
-interface QrCodeAnalayzerCallBack {
+interface BarcodeXAnalayzerCallBack {
     fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>)
     fun onQrCodesFailed(exception: Exception)
 } 

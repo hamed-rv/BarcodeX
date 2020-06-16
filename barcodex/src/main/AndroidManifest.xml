@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hamedrahimvand.barcodex">
-
-    /
+    <uses-feature android:name="android.hardware.camera.any" android:required="true"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <application>
+        <activity android:name=".BarcodeXActivity"/>
+    </application>
 </manifest>

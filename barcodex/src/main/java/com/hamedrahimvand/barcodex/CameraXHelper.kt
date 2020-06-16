@@ -8,7 +8,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import android.util.Size
 import androidx.camera.core.*
+import androidx.camera.core.impl.ImageAnalysisConfig
 import androidx.camera.extensions.BeautyPreviewExtender
 import androidx.camera.extensions.BokehPreviewExtender
 import androidx.camera.extensions.HdrPreviewExtender
@@ -30,7 +32,7 @@ import java.util.concurrent.Executors
 class CameraXHelper constructor(
     val previewView: PreviewView,
     val lifecycleOwner: LifecycleOwner,
-    val qrCodeAnalyzerCallback: QrCodeAnalayzerCallBack
+    val barcodeXAnalyzerCallback: BarcodeXAnalayzerCallBack
 ) {
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -114,7 +116,11 @@ class CameraXHelper constructor(
             }
 
             else -> {
-                openPermissionSetting(activity)
+                ActivityCompat.requestPermissions(
+                    activity,
+                    REQUIRED_PERMISSIONS,
+                    REQUEST_CAMERA_PERMISSION
+                )
             }
         }
 
@@ -239,11 +245,13 @@ class CameraXHelper constructor(
     private fun getImageAnalysis(): ImageAnalysis {
 
         val imageAnalysis = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
-        val qrCodeAnalyzer = QrCodeAnalyzer(qrCodeAnalyzerCallback)
+        val qrCodeAnalyzer = QrCodeAnalyzer(barcodeXAnalyzerCallback)
 
         imageAnalysis.setAnalyzer(executor, qrCodeAnalyzer)
+
         return imageAnalysis
     }
 

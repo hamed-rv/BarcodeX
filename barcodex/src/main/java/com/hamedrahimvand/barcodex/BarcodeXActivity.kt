@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.barcodex_activity.*
  *@author Hamed.Rahimvand
  *@since 6/14/20
  */
-class CameraXActivity : AppCompatActivity(R.layout.barcodex_activity), QrCodeAnalayzerCallBack {
+class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity), BarcodeXAnalayzerCallBack {
     lateinit var cameraXHelper: CameraXHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +20,7 @@ class CameraXActivity : AppCompatActivity(R.layout.barcodex_activity), QrCodeAna
         cameraXHelper = CameraXHelper(
             previewView = previewView,
             lifecycleOwner = this,
-            qrCodeAnalyzerCallback = this
+            barcodeXAnalyzerCallback = this
         )
         cameraXHelper.requestPermission(this)
     }
