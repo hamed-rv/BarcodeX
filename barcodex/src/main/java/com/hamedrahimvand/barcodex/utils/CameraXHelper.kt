@@ -1,4 +1,4 @@
-package com.hamedrahimvand.barcodex
+package com.hamedrahimvand.barcodex.utils
 
 import android.Manifest
 import android.app.Activity
@@ -8,9 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
-import android.util.Size
 import androidx.camera.core.*
-import androidx.camera.core.impl.ImageAnalysisConfig
 import androidx.camera.extensions.BeautyPreviewExtender
 import androidx.camera.extensions.BokehPreviewExtender
 import androidx.camera.extensions.HdrPreviewExtender
@@ -139,7 +137,9 @@ class CameraXHelper constructor(
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         val uri: Uri = Uri.fromParts("package", applicationContext.packageName, null)
         intent.data = uri
-        activity.startActivityForResult(intent, REQUEST_PERMISSION_SETTING)
+        activity.startActivityForResult(intent,
+            REQUEST_PERMISSION_SETTING
+        )
     }
 
     fun startCamera() {
@@ -248,7 +248,9 @@ class CameraXHelper constructor(
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
-        val qrCodeAnalyzer = QrCodeAnalyzer(barcodeXAnalyzerCallback)
+        val qrCodeAnalyzer = QrCodeAnalyzer(
+            barcodeXAnalyzerCallback
+        )
 
         imageAnalysis.setAnalyzer(executor, qrCodeAnalyzer)
 

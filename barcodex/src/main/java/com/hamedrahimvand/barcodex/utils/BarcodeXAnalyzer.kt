@@ -1,4 +1,4 @@
-package com.hamedrahimvand.barcodex
+package com.hamedrahimvand.barcodex.utils
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy

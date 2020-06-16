@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.hamedrahimvand.barcodex.utils.BarcodeXAnalayzerCallBack
+import com.hamedrahimvand.barcodex.utils.CameraXHelper
 import kotlinx.android.synthetic.main.barcodex_activity.*
 
 /**
@@ -12,7 +14,8 @@ import kotlinx.android.synthetic.main.barcodex_activity.*
  *@author Hamed.Rahimvand
  *@since 6/14/20
  */
-class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity), BarcodeXAnalayzerCallBack {
+class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
+    BarcodeXAnalayzerCallBack {
     lateinit var cameraXHelper: CameraXHelper
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
