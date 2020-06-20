@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import androidx.annotation.RestrictTo
 import androidx.camera.core.*
 import androidx.camera.extensions.BeautyPreviewExtender
 import androidx.camera.extensions.BokehPreviewExtender
@@ -54,6 +55,7 @@ class CameraXHelper constructor(
      * Use this method inside Activity#onActivityResult()
      * if permission is granted, the camera will be started automatically
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun checkActivityResult(
         requestCode: Int, resultCode: Int,
         doOnPermissionGranted: () -> Unit = {},
@@ -73,6 +75,7 @@ class CameraXHelper constructor(
      * Use this method inside Activity#onRequestPermissionsResult()
      * if permission is granted, the camera will be started automatically
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun checkRequestPermissionResult(
         requestCode: Int,
         doOnPermissionGranted: () -> Unit = {},
@@ -127,6 +130,7 @@ class CameraXHelper constructor(
     /**
      * Check permission and request to get permission. it'll started the camera if permission is granted.
      */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     fun requestPermission(activity: Activity) {
         requestPermission(activity) {
             startCamera()

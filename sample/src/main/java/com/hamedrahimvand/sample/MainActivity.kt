@@ -1,15 +1,15 @@
 package com.hamedrahimvand.sample
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.hamedrahimvand.barcodex.BarcodeXActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.hamedrahimvand.barcodex.R
+import com.hamedrahimvand.barcodex.utils.BarcodeXHelper
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        startActivity(Intent(this, BarcodeXActivity::class.java))
+        val intent = BarcodeXHelper.getBarcodeXIntent(this)
+        startActivity(intent)
     }
 }

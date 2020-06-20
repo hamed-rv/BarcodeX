@@ -16,16 +16,10 @@ import kotlinx.android.synthetic.main.barcodex_activity.*
  */
 class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
     BarcodeXAnalayzerCallBack {
-    lateinit var cameraXHelper: CameraXHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        cameraXHelper = CameraXHelper(
-            previewView = previewView,
-            lifecycleOwner = this,
-            barcodeXAnalyzerCallback = this
-        )
-        cameraXHelper.requestPermission(this)
+        barcodeX.setup(this,this,this)
     }
 
     override fun onRequestPermissionsResult(
@@ -34,7 +28,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        cameraXHelper.checkRequestPermissionResult(
+        barcodeX.checkRequestPermissionResult(
             requestCode = requestCode,
             doOnPermissionGranted = {
                 Log.v(CameraXHelper.TAG, "permission granted")
@@ -46,7 +40,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        cameraXHelper.checkActivityResult(
+        barcodeX.checkActivityResult(
             requestCode = requestCode,
             resultCode = resultCode,
             doOnPermissionGranted = {
