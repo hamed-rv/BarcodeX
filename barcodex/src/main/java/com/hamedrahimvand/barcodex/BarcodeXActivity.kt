@@ -1,5 +1,6 @@
 package com.hamedrahimvand.barcodex
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -17,9 +18,15 @@ import kotlinx.android.synthetic.main.barcodex_activity.*
 class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
     BarcodeXAnalayzerCallBack {
 
+
+    companion object {
+        fun getBarcodeXIntent(context: Context): Intent =
+            Intent(context, BarcodeXActivity::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        barcodeX.setup(this,this,this)
+        barcodeX.setup(this, this, this)
     }
 
     override fun onRequestPermissionsResult(

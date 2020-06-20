@@ -10,12 +10,10 @@ import java.io.Serializable
 
 data class BarcodeBoundingBoxModel(
     val rect: Rect?,
-    val qrCode: QrCode?,
+    val type: String, val value: String,
     val barcodeBoundingBoxStates: BarcodeBoundingBoxStates
 )
 
 enum class BarcodeBoundingBoxStates {
-    VALID, INVALID, DUPLICATE, SEMI_VALID
+    VALID, INVALID, DUPLICATE
 }
-
-data class QrCode(val type: String, val value: String)
