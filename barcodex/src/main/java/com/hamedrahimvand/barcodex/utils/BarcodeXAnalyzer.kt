@@ -13,13 +13,14 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
  *@author Hamed.Rahimvand
  *@since 6/14/20
  */
-class QrCodeAnalyzer(
+class BarcodeXAnalyzer(
     private val barcodeXAnalyzerCallback: BarcodeXAnalayzerCallBack?
 ) : ImageAnalysis.Analyzer {
 
 
     override fun analyze(image: ImageProxy) {
         try {
+            barcodeXAnalyzerCallback?.onNewFrame(image.width ,image.height)
             val options = FirebaseVisionBarcodeDetectorOptions.Builder()
                 .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
                 .build()
@@ -33,16 +34,18 @@ class QrCodeAnalyzer(
             detector.detectInImage(visionImage)
                 .addOnSuccessListener { barcodes ->
                     barcodeXAnalyzerCallback?.onQrCodesDetected(barcodes)
+                    image.close()
                 }
                 .addOnFailureListener {
                     barcodeXAnalyzerCallback?.onQrCodesFailed(it)
+                    image.close()
                 }
 
         } catch (t: Exception) {
             t.printStackTrace()
             barcodeXAnalyzerCallback?.onQrCodesFailed(t)
+            image.close()
         }
-        image.close()
     }
 
     private fun rotationDegreesToFirebaseRotation(rotationDegrees: Int): Int {
@@ -57,6 +60,7 @@ class QrCodeAnalyzer(
 }
 
 interface BarcodeXAnalayzerCallBack {
+    fun onNewFrame(width:Int,height:Int)
     fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>)
     fun onQrCodesFailed(exception: Exception)
 } 

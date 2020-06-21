@@ -58,7 +58,8 @@ class BarcodeBoundingBox : FrameLayout{
         isAntiAlias = true
     }
     val duplicatePaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.red_translucent)
+//        color = ContextCompat.getColor(context, R.color.red_translucent)
+        color = ContextCompat.getColor(context, R.color.green3_translucent)
         style = Paint.Style.FILL
         strokeJoin = Paint.Join.ROUND
         strokeCap = Paint.Cap.ROUND

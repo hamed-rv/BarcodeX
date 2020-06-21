@@ -8,14 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalayzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
-import kotlinx.android.synthetic.main.barcodex_activity.*
+import kotlinx.android.synthetic.main.activity_barcodex.*
 
 /**
  *
  *@author Hamed.Rahimvand
  *@since 6/14/20
  */
-class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
+class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex),
     BarcodeXAnalayzerCallBack {
 
 
@@ -64,5 +64,8 @@ class BarcodeXActivity : AppCompatActivity(R.layout.barcodex_activity),
 
     override fun onQrCodesFailed(exception: Exception) {
         exception.printStackTrace()
+    }
+    override fun onNewFrame(width: Int, height: Int) {
+
     }
 }

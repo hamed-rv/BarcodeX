@@ -13,6 +13,7 @@ import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxModel
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalayzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
+import kotlin.math.abs
 
 /**
  *
@@ -34,6 +35,7 @@ class BarcodeX : FrameLayout {
 
     lateinit var cameraXHelper: CameraXHelper
     var barcodeBoundingBox: BarcodeBoundingBox
+    var setScale = false
 
     init {
         View.inflate(context, R.layout.barcodex, this)
@@ -49,6 +51,31 @@ class BarcodeX : FrameLayout {
             previewView = findViewById(R.id.previewView),
             lifecycleOwner = lifecycleOwner,
             barcodeXAnalyzerCallback = object : BarcodeXAnalayzerCallBack {
+                override fun onNewFrame(w: Int, h: Int) {
+                    if (!setScale) {
+                        setScale = true
+                        val min: Int = w.coerceAtMost(h)
+                        val max: Int = w.coerceAtLeast(h)
+                        val scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
+                        if (height < max) {
+                            barcodeBoundingBox.scaleY = 1f
+                            barcodeBoundingBox.translationY = (-abs(height - max)).toFloat() / 2
+                        } else {
+                            barcodeBoundingBox.scaleY = scale
+                            barcodeBoundingBox.translationY =
+                                ((height - max).toFloat() / 2) * barcodeBoundingBox.scaleY
+                        }
+                        if (width < min) {
+                            barcodeBoundingBox.scaleX = 1f
+                            barcodeBoundingBox.translationX = (-abs(width - min)).toFloat() / 2
+                        } else {
+                            barcodeBoundingBox.scaleX = scale
+                            barcodeBoundingBox.translationX =
+                                ((width - min).toFloat() / 2) * barcodeBoundingBox.scaleX
+                        }
+                    }
+                }
+
                 override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
                     //draw
                     barcodeBoundingBox.drawBoundingBox(qrCodes.toBoundingBox())

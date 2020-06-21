@@ -252,11 +252,11 @@ class CameraXHelper constructor(
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
-        val qrCodeAnalyzer = QrCodeAnalyzer(
+        val barcodeXAnalyzer = BarcodeXAnalyzer(
             barcodeXAnalyzerCallback
         )
 
-        imageAnalysis.setAnalyzer(executor, qrCodeAnalyzer)
+        imageAnalysis.setAnalyzer(executor, barcodeXAnalyzer)
 
         return imageAnalysis
     }
