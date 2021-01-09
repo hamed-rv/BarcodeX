@@ -31,7 +31,7 @@ import java.util.concurrent.Executors
 class CameraXHelper constructor(
     val previewView: PreviewView,
     val lifecycleOwner: LifecycleOwner,
-    val barcodeXAnalyzerCallback: BarcodeXAnalayzerCallBack
+    val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack
 ) {
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -94,7 +94,7 @@ class CameraXHelper constructor(
     /**
      * Check permission and request permission if needed.
      */
-    inline fun requestPermission(
+    private inline fun requestPermission(
         activity: Activity,
         crossinline doOnPermissionGranted: () -> Unit = {}
     ) {
@@ -137,7 +137,7 @@ class CameraXHelper constructor(
         }
     }
 
-    fun openPermissionSetting(activity: Activity) {
+    private fun openPermissionSetting(activity: Activity) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         val uri: Uri = Uri.fromParts("package", applicationContext.packageName, null)
         intent.data = uri
@@ -146,14 +146,14 @@ class CameraXHelper constructor(
         )
     }
 
-    fun startCamera() {
+    private fun startCamera() {
         if (mIsCameraStarted) return
 
         if (!allPermissionsGranted())
             throw SecurityException("Permission Denial, call CameraXHelper#requestPermission()")
         cameraProviderFuture = ProcessCameraProvider.getInstance(applicationContext)
         cameraProvider = cameraProviderFuture.get()
-        // setup imagecapture
+        // setup image capture
         imageCapture = setupImageCapture()
 
 
@@ -194,10 +194,9 @@ class CameraXHelper constructor(
     }
 
     private fun setupPreviewBuilder(): Preview.Builder {
-        val previewBuilder = Preview.Builder().apply {
+        return Preview.Builder().apply {
             setTargetAspectRatio(AspectRatio.RATIO_16_9)
         }
-        return previewBuilder
     }
 
     private fun setupImageCapture(): ImageCapture {
@@ -267,7 +266,7 @@ class CameraXHelper constructor(
     }
 
 
-    fun allPermissionsGranted(): Boolean {
+    private fun allPermissionsGranted(): Boolean {
         for (permission in REQUIRED_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(
                     applicationContext, permission

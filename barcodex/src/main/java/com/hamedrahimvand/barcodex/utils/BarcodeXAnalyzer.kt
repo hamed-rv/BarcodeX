@@ -14,7 +14,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
  *@since 6/14/20
  */
 class BarcodeXAnalyzer(
-    private val barcodeXAnalyzerCallback: BarcodeXAnalayzerCallBack?
+    private val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack?
 ) : ImageAnalysis.Analyzer {
 
 
@@ -59,8 +59,8 @@ class BarcodeXAnalyzer(
     }
 }
 
-interface BarcodeXAnalayzerCallBack {
-    fun onNewFrame(width:Int,height:Int)
+interface BarcodeXAnalyzerCallBack {
+    fun onNewFrame(w:Int,h:Int){}
     fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>)
     fun onQrCodesFailed(exception: Exception)
 } 
