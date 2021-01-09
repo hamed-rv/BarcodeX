@@ -32,7 +32,7 @@ class BarcodeX @JvmOverloads constructor(
     private val barcodeMap = mutableMapOf<String, Int>()
 
     private var barcodeBoundingBox: BarcodeBoundingBox
-    private val lock = Object()
+    private var isScaled = false
 
     init {
         View.inflate(context, R.layout.barcodex, this)
@@ -94,7 +94,8 @@ class BarcodeX @JvmOverloads constructor(
 
     private val analyzerCallBack = object : BarcodeXAnalyzerCallBack {
         override fun onNewFrame(w: Int, h: Int) {
-            synchronized(lock) {
+            if(!isScaled) {
+                isScaled = true
                 val min: Int = w.coerceAtMost(h)
                 val max: Int = w.coerceAtLeast(h)
                 val scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
@@ -133,6 +134,10 @@ class BarcodeX @JvmOverloads constructor(
                 it.onQrCodesFailed(exception)
             }
         }
+    }
+
+    fun recalculate(){
+        isScaled = false
     }
 
     fun takePhoto(
