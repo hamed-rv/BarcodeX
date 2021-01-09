@@ -3,6 +3,7 @@ package com.hamedrahimvand.barcodex
 import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import androidx.camera.core.ImageCapture
@@ -31,7 +32,7 @@ class BarcodeX @JvmOverloads constructor(
     private val barcodeMap = mutableMapOf<String, Int>()
 
     private var barcodeBoundingBox: BarcodeBoundingBox
-    private var setScale = false
+    private val lock = Object()
 
     init {
         View.inflate(context, R.layout.barcodex, this)
@@ -93,8 +94,7 @@ class BarcodeX @JvmOverloads constructor(
 
     private val analyzerCallBack = object : BarcodeXAnalyzerCallBack {
         override fun onNewFrame(w: Int, h: Int) {
-            if (!setScale) {
-                setScale = true
+            synchronized(lock) {
                 val min: Int = w.coerceAtMost(h)
                 val max: Int = w.coerceAtLeast(h)
                 val scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
@@ -135,8 +135,17 @@ class BarcodeX @JvmOverloads constructor(
         }
     }
 
-    fun takePhoto(file: File,
-                  doOnPhotoTaken: (ImageCapture.OutputFileResults) -> Unit,
-                  doOnError: (ImageCaptureException) -> Unit) = cameraXHelper.takePhoto(file, doOnPhotoTaken, doOnError)
+    fun takePhoto(
+        file: File,
+        doOnPhotoTaken: (ImageCapture.OutputFileResults) -> Unit,
+        doOnError: (ImageCaptureException) -> Unit
+    ) = cameraXHelper.takePhoto(file, doOnPhotoTaken, doOnError)
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if(event?.action == MotionEvent.ACTION_DOWN){
+            cameraXHelper.onTouch(event.x,event.y)
+        }
+        return super.onTouchEvent(event)
+    }
 }
 
