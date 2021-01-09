@@ -197,7 +197,7 @@ class CameraXHelper constructor(
 
     private fun setupPreviewBuilder(): Preview.Builder {
         return Preview.Builder().apply {
-            setTargetAspectRatio(AspectRatio.RATIO_16_9)
+//            setTargetAspectRatio(AspectRatio.RATIO_16_9)
         }
     }
 
