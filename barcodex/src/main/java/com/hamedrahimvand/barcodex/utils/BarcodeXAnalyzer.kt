@@ -1,5 +1,6 @@
 package com.hamedrahimvand.barcodex.utils
 
+import android.annotation.SuppressLint
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.firebase.ml.vision.FirebaseVision
@@ -7,6 +8,8 @@ import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetectorOptions
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
+import java.util.*
+import kotlin.concurrent.schedule
 
 /**
  *
@@ -17,34 +20,46 @@ class BarcodeXAnalyzer(
     private val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack?
 ) : ImageAnalysis.Analyzer {
 
+    private val timer = Timer()
+    private var isLock = false
+    var detectionSpeed = DEFAULT_DETECTION_SPEED
+    companion object{
+        const val DEFAULT_DETECTION_SPEED = 60L
+    }
 
+    @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
-        try {
-            barcodeXAnalyzerCallback?.onNewFrame(image.width ,image.height)
-            val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-                .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
-                .build()
+        if (isLock) return
+        isLock = true
+        timer.schedule(detectionSpeed) {
+            isLock = false
+            try {
+                barcodeXAnalyzerCallback?.onNewFrame(image.width, image.height)
+                val options = FirebaseVisionBarcodeDetectorOptions.Builder()
+                    .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
+                    .build()
 
-            val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
+                val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
 
-            val rotation = rotationDegreesToFirebaseRotation(image.imageInfo.rotationDegrees)
+                val rotation = rotationDegreesToFirebaseRotation(image.imageInfo.rotationDegrees)
 
-            val visionImage = FirebaseVisionImage.fromMediaImage(image.image!!,rotation)
+                val visionImage = FirebaseVisionImage.fromMediaImage(image.image!!, rotation)
 
-            detector.detectInImage(visionImage)
-                .addOnSuccessListener { barcodes ->
-                    barcodeXAnalyzerCallback?.onQrCodesDetected(barcodes)
-                    image.close()
-                }
-                .addOnFailureListener {
-                    barcodeXAnalyzerCallback?.onQrCodesFailed(it)
-                    image.close()
-                }
+                detector.detectInImage(visionImage)
+                    .addOnSuccessListener { barcodes ->
+                        barcodeXAnalyzerCallback?.onQrCodesDetected(barcodes)
+                        image.close()
+                    }
+                    .addOnFailureListener {
+                        barcodeXAnalyzerCallback?.onQrCodesFailed(it)
+                        image.close()
+                    }
 
-        } catch (t: Exception) {
-            t.printStackTrace()
-            barcodeXAnalyzerCallback?.onQrCodesFailed(t)
-            image.close()
+            } catch (t: Exception) {
+                t.printStackTrace()
+                barcodeXAnalyzerCallback?.onQrCodesFailed(t)
+                image.close()
+            }
         }
     }
 
@@ -60,7 +75,7 @@ class BarcodeXAnalyzer(
 }
 
 interface BarcodeXAnalyzerCallBack {
-    fun onNewFrame(w:Int,h:Int){}
+    fun onNewFrame(w: Int, h: Int) {}
     fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>)
     fun onQrCodesFailed(exception: Exception)
 } 
