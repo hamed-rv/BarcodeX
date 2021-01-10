@@ -146,11 +146,11 @@ class BarcodeX @JvmOverloads constructor(
         doOnError: (ImageCaptureException) -> Unit
     ) = cameraXHelper.takePhoto(file, doOnPhotoTaken, doOnError)
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if(event?.action == MotionEvent.ACTION_DOWN){
-            cameraXHelper.onTouch(event.x,event.y)
-        }
-        return super.onTouchEvent(event)
-    }
+//    override fun onTouchEvent(event: MotionEvent?): Boolean {
+//        if(event?.action == MotionEvent.ACTION_DOWN){
+//            cameraXHelper.onTouch(event.x,event.y)
+//        }
+//        return super.onTouchEvent(event)
+//    }
 }
 

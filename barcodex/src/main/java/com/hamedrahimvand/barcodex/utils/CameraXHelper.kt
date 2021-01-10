@@ -41,7 +41,6 @@ class CameraXHelper constructor(
     private var imageCapture: ImageCapture? = null
     private var mIsCameraStarted = false
     private val applicationContext: Context = previewView.context.applicationContext
-    private val focusLock = Object()
     private lateinit var cameraSelector : CameraSelector
 
     companion object {
@@ -171,7 +170,6 @@ class CameraXHelper constructor(
 
         val imageAnalysis = getImageAnalysis()
 
-
         camera = cameraProvider?.bindToLifecycle(
             lifecycleOwner,
             cameraSelector,
@@ -190,7 +188,7 @@ class CameraXHelper constructor(
 
         val preview = previewBuilder.build()
         preview.setSurfaceProvider(
-            previewView.createSurfaceProvider()
+            previewView.surfaceProvider
         )
         return preview
     }
@@ -297,17 +295,4 @@ class CameraXHelper constructor(
         )
     }
 
-    fun onTouch(x:Float,y:Float){
-        synchronized(focusLock) {
-            val factory = DisplayOrientedMeteringPointFactory(
-                previewView.display,
-                cameraSelector,
-                previewView.width.toFloat(),
-                previewView.height.toFloat()
-            )
-            val metric = factory.createPoint(x, y)
-            val action = FocusMeteringAction.Builder(metric).build();
-            camera?.cameraControl?.startFocusAndMetering(action);
-        }
-    }
 }
