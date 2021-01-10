@@ -28,10 +28,11 @@ import java.util.concurrent.Executors
  *@author Hamed.Rahimvand
  *@since 6/14/20
  */
-class CameraXHelper constructor(
+class CameraXHelper(
     val previewView: PreviewView,
     val lifecycleOwner: LifecycleOwner,
-    val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack
+    val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack,
+    val detectionSpeed: Long
 ) {
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -254,6 +255,7 @@ class CameraXHelper constructor(
         val barcodeXAnalyzer = BarcodeXAnalyzer(
             barcodeXAnalyzerCallback
         )
+        barcodeXAnalyzer.detectionSpeed = detectionSpeed
 
         imageAnalysis.setAnalyzer(executor, barcodeXAnalyzer)
 
@@ -293,6 +295,45 @@ class CameraXHelper constructor(
                 Beauty: ${beautyPreviewExtender.isExtensionAvailable(cameraSelector)}
                 """
         )
+    }
+
+    /**
+     * @return True if device support Flash, otherwise it'll return False
+     */
+    fun torchOff(): Boolean {
+        return if(hasFlash()){
+            enableTorch(false)
+            true
+        }else false
+    }
+
+    /**
+     * @return True if device support Flash, otherwise it'll return False
+     */
+    fun torchOn(): Boolean {
+        return if(hasFlash()){
+            enableTorch(true)
+            true
+        }else false
+    }
+
+    /**
+     * @return True if torch is on, and off if torch is off. Also it return null if device doesn't support torch
+     */
+    fun toggleTorch(): Boolean? {
+        if(!hasFlash()) return null
+        return if(camera?.cameraInfo?.torchState?.value == TorchState.ON){
+            torchOff()
+            false
+        }else{
+            torchOn()
+            true
+        }
+    }
+
+    private fun hasFlash() = camera?.cameraInfo?.hasFlashUnit() == true
+    private fun enableTorch(torch:Boolean){
+        camera?.cameraControl?.enableTorch(torch)
     }
 
 }

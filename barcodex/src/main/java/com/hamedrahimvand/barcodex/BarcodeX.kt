@@ -3,7 +3,6 @@ package com.hamedrahimvand.barcodex
 import android.app.Activity
 import android.content.Context
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import androidx.camera.core.ImageCapture
@@ -12,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
+import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzer.Companion.DEFAULT_DETECTION_SPEED
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
 import com.hamedrahimvand.barcodex.utils.toBoundingBox
@@ -24,7 +24,7 @@ import kotlin.math.abs
  *@since 6/16/20
  */
 class BarcodeX @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, val attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private lateinit var cameraXHelper: CameraXHelper
@@ -33,10 +33,17 @@ class BarcodeX @JvmOverloads constructor(
 
     private var barcodeBoundingBox: BarcodeBoundingBox
     private var isScaled = false
-
+    private var detectionSpeed = DEFAULT_DETECTION_SPEED
     init {
         View.inflate(context, R.layout.barcodex, this)
         barcodeBoundingBox = findViewById(R.id.barcodeBoundingBox)
+        getAttrs()
+    }
+
+    private fun getAttrs() {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeX)
+        detectionSpeed = a.getInteger(R.styleable.BarcodeX_bx_detection_speed, DEFAULT_DETECTION_SPEED.toInt()).toLong()
+        a.recycle()
     }
 
     fun setup(
@@ -46,7 +53,8 @@ class BarcodeX @JvmOverloads constructor(
         cameraXHelper = CameraXHelper(
             previewView = findViewById(R.id.previewView),
             lifecycleOwner = lifecycleOwner,
-            barcodeXAnalyzerCallback = analyzerCallBack
+            barcodeXAnalyzerCallback = analyzerCallBack,
+            detectionSpeed = detectionSpeed
         )
         cameraXHelper.requestPermission(activity)
     }
@@ -94,7 +102,7 @@ class BarcodeX @JvmOverloads constructor(
 
     private val analyzerCallBack = object : BarcodeXAnalyzerCallBack {
         override fun onNewFrame(w: Int, h: Int) {
-            if(!isScaled) {
+            if (!isScaled) {
                 isScaled = true
                 val min: Int = w.coerceAtMost(h)
                 val max: Int = w.coerceAtLeast(h)
@@ -136,7 +144,7 @@ class BarcodeX @JvmOverloads constructor(
         }
     }
 
-    fun recalculate(){
+    fun recalculate() {
         isScaled = false
     }
 
@@ -146,11 +154,16 @@ class BarcodeX @JvmOverloads constructor(
         doOnError: (ImageCaptureException) -> Unit
     ) = cameraXHelper.takePhoto(file, doOnPhotoTaken, doOnError)
 
-//    override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        if(event?.action == MotionEvent.ACTION_DOWN){
-//            cameraXHelper.onTouch(event.x,event.y)
-//        }
-//        return super.onTouchEvent(event)
-//    }
+    fun torchOn(): Boolean {
+        return cameraXHelper.torchOn()
+    }
+
+    fun torchOff(): Boolean {
+        return cameraXHelper.torchOff()
+    }
+
+    fun toggleTorch(): Boolean? {
+        return cameraXHelper.toggleTorch()
+    }
 }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
@@ -22,6 +23,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             Intent(context, BarcodeXActivity::class.java)
     }
 
+
     var barcodeXAnalyzerCallBack = object : BarcodeXAnalyzerCallBack {
         override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
             Log.v(CameraXHelper.TAG, "QRCode detected: $qrCodes")
@@ -36,8 +38,23 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
         super.onCreate(savedInstanceState)
         barcodeX.setup(this, this)
         barcodeX.addAnalyzerCallBack(barcodeXAnalyzerCallBack)
-        captureButton.setOnClickListener{
-//            barcodeX.takePhoto() //TODO not implemented yet
+        ibTorch.setOnClickListener{
+            toggleTorch()
+        }
+    }
+
+    private fun toggleTorch() {
+        when (barcodeX.toggleTorch()) {
+            true -> {
+                ibTorch.setImageResource(R.drawable.ic_baseline_flash_off_24)
+            }
+            false -> {
+                ibTorch.setImageResource(R.drawable.ic_baseline_flash_on_24)
+            }
+            else -> {
+                ibTorch.setImageResource(R.drawable.ic_baseline_no_flash_24)
+                Toast.makeText(this, "Device does not have Flash", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
