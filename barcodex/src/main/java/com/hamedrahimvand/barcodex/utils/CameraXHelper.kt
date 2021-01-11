@@ -46,6 +46,7 @@ class CameraXHelper(
     private var mIsCameraStarted = false
     private val applicationContext: Context = previewView.context.applicationContext
     private lateinit var cameraSelector: CameraSelector
+    private lateinit var barcodeXAnalyzer: BarcodeXAnalyzer
 
     companion object {
         const val TAG = "CameraXExtension"
@@ -255,7 +256,7 @@ class CameraXHelper(
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
-        val barcodeXAnalyzer = BarcodeXAnalyzer(
+        barcodeXAnalyzer = BarcodeXAnalyzer(
             barcodeXAnalyzerCallback
         ).also {
             if (supportedFormats != null)
@@ -339,8 +340,18 @@ class CameraXHelper(
     }
 
     private fun hasFlash() = camera?.cameraInfo?.hasFlashUnit() == true
+
     private fun enableTorch(torch: Boolean) {
         camera?.cameraControl?.enableTorch(torch)
     }
 
+    fun pauseDetection() {
+        if (::barcodeXAnalyzer.isInitialized)
+            barcodeXAnalyzer.pauseDetection()
+    }
+
+    fun resumeDetection() {
+        if (::barcodeXAnalyzer.isInitialized)
+            barcodeXAnalyzer.resumeDetection()
+    }
 }

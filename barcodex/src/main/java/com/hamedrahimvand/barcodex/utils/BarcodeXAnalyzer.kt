@@ -21,7 +21,8 @@ class BarcodeXAnalyzer(
 ) : ImageAnalysis.Analyzer {
 
     private val timer = Timer()
-    private var isLock = false
+    private var isLocked = false
+    private var isPaused = false
     var detectionSpeed = DEFAULT_DETECTION_SPEED
 
     @FirebaseVisionBarcode.BarcodeFormat
@@ -33,10 +34,14 @@ class BarcodeXAnalyzer(
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(image: ImageProxy) {
-        if (isLock) return
-        isLock = true
+        if (isLocked || isPaused) {
+            image.close()
+            barcodeXAnalyzerCallback.onQrCodesDetected(listOf())
+            return
+        }
+        isLocked = true
         timer.schedule(detectionSpeed) {
-            isLock = false
+            isLocked = false
             try {
                 barcodeXAnalyzerCallback.onNewFrame(image.width, image.height)
                 val options = FirebaseVisionBarcodeDetectorOptions.Builder()
@@ -78,6 +83,14 @@ class BarcodeXAnalyzer(
             270 -> FirebaseVisionImageMetadata.ROTATION_270
             else -> throw IllegalArgumentException("Not supported")
         }
+    }
+
+    fun pauseDetection(){
+        isPaused = true
+    }
+
+    fun resumeDetection(){
+        isPaused = false
     }
 }
 

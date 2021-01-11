@@ -2,6 +2,7 @@ package com.hamedrahimvand.barcodex
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -34,6 +35,7 @@ class BarcodeX @JvmOverloads constructor(
     private var barcodeBoundingBox: BarcodeBoundingBox
     private var isScaled = false
     private var detectionSpeed = DEFAULT_DETECTION_SPEED
+
     init {
         View.inflate(context, R.layout.barcodex, this)
         barcodeBoundingBox = findViewById(R.id.barcodeBoundingBox)
@@ -42,7 +44,9 @@ class BarcodeX @JvmOverloads constructor(
 
     private fun getAttrs() {
         val a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeX)
-        detectionSpeed = a.getInteger(R.styleable.BarcodeX_bx_detection_speed, DEFAULT_DETECTION_SPEED.toInt()).toLong()
+        detectionSpeed =
+            a.getInteger(R.styleable.BarcodeX_bx_detection_speed, DEFAULT_DETECTION_SPEED.toInt())
+                .toLong()
         a.recycle()
     }
 
@@ -130,16 +134,18 @@ class BarcodeX @JvmOverloads constructor(
         }
 
         override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
-            //draw
-            val barcodeBoundList = qrCodes.toBoundingBox() {
-                getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
-            }
-            barcodeBoundingBox.drawBoundingBox(barcodeBoundList)
-            analyzerCallBacks.forEach {
-                if(qrCodes.isNullOrEmpty()){
-                    return@forEach
+            Handler(context.mainLooper).post {
+                //draw
+                val barcodeBoundList = qrCodes.toBoundingBox() {
+                    getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
                 }
-                it.onQrCodesDetected(qrCodes)
+                barcodeBoundingBox.drawBoundingBox(barcodeBoundList)
+                analyzerCallBacks.forEach {
+                    if (qrCodes.isNullOrEmpty()) {
+                        return@forEach
+                    }
+                    it.onQrCodesDetected(qrCodes)
+                }
             }
         }
 
@@ -171,6 +177,23 @@ class BarcodeX @JvmOverloads constructor(
 
     fun toggleTorch(): Boolean? {
         return cameraXHelper.toggleTorch()
+    }
+
+    fun pauseDetection() {
+        if (::cameraXHelper.isInitialized)
+            cameraXHelper.pauseDetection()
+    }
+
+    fun resumeDetection() {
+        if (::cameraXHelper.isInitialized)
+            cameraXHelper.resumeDetection()
+    }
+
+    /**
+     * Clear all drew bounds.
+     */
+    fun clearView() {
+
     }
 }
 
