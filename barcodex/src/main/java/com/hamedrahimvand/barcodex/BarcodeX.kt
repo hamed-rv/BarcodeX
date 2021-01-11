@@ -133,6 +133,9 @@ class BarcodeX @JvmOverloads constructor(
             }
             barcodeBoundingBox.drawBoundingBox(barcodeBoundList)
             analyzerCallBacks.forEach {
+                if(qrCodes.isNullOrEmpty()){
+                    return@forEach
+                }
                 it.onQrCodesDetected(qrCodes)
             }
         }
