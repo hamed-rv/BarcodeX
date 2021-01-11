@@ -48,13 +48,16 @@ class BarcodeX @JvmOverloads constructor(
 
     fun setup(
         activity: Activity,
-        lifecycleOwner: LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
+        @FirebaseVisionBarcode.BarcodeFormat
+        supportedFormats: IntArray? = null
     ) {
         cameraXHelper = CameraXHelper(
             previewView = findViewById(R.id.previewView),
             lifecycleOwner = lifecycleOwner,
             barcodeXAnalyzerCallback = analyzerCallBack,
-            detectionSpeed = detectionSpeed
+            detectionSpeed = detectionSpeed,
+            supportedFormats = supportedFormats
         )
         cameraXHelper.requestPermission(activity)
     }
@@ -145,6 +148,7 @@ class BarcodeX @JvmOverloads constructor(
                 it.onQrCodesFailed(exception)
             }
         }
+
     }
 
     fun recalculate() {

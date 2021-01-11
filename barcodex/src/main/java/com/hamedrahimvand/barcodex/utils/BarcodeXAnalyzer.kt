@@ -17,13 +17,17 @@ import kotlin.concurrent.schedule
  *@since 6/14/20
  */
 class BarcodeXAnalyzer(
-    private val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack?
+    private val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack
 ) : ImageAnalysis.Analyzer {
 
     private val timer = Timer()
     private var isLock = false
     var detectionSpeed = DEFAULT_DETECTION_SPEED
-    companion object{
+
+    @FirebaseVisionBarcode.BarcodeFormat
+    var supportedFormats: IntArray = intArrayOf(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
+
+    companion object {
         const val DEFAULT_DETECTION_SPEED = 60L
     }
 
@@ -34,9 +38,12 @@ class BarcodeXAnalyzer(
         timer.schedule(detectionSpeed) {
             isLock = false
             try {
-                barcodeXAnalyzerCallback?.onNewFrame(image.width, image.height)
+                barcodeXAnalyzerCallback.onNewFrame(image.width, image.height)
                 val options = FirebaseVisionBarcodeDetectorOptions.Builder()
-                    .setBarcodeFormats(FirebaseVisionBarcode.FORMAT_ALL_FORMATS)
+                    .setBarcodeFormats(
+                        supportedFormats[0],
+                        *supportedFormats.filterIndexed { index, _ -> index != 0 }.toIntArray()
+                    )
                     .build()
 
                 val detector = FirebaseVision.getInstance().getVisionBarcodeDetector(options)
@@ -47,7 +54,7 @@ class BarcodeXAnalyzer(
 
                 detector.detectInImage(visionImage)
                     .addOnSuccessListener { barcodes ->
-                        barcodeXAnalyzerCallback?.onQrCodesDetected(barcodes)
+                        barcodeXAnalyzerCallback.onQrCodesDetected(barcodes)
                         image.close()
                     }
                     .addOnFailureListener {

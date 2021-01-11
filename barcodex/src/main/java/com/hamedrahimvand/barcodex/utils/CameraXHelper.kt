@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -32,7 +33,9 @@ class CameraXHelper(
     val previewView: PreviewView,
     val lifecycleOwner: LifecycleOwner,
     val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack,
-    val detectionSpeed: Long
+    val detectionSpeed: Long,
+    @FirebaseVisionBarcode.BarcodeFormat
+    val supportedFormats: IntArray? = null
 ) {
 
     private val executor = Executors.newSingleThreadExecutor()
@@ -42,7 +45,7 @@ class CameraXHelper(
     private var imageCapture: ImageCapture? = null
     private var mIsCameraStarted = false
     private val applicationContext: Context = previewView.context.applicationContext
-    private lateinit var cameraSelector : CameraSelector
+    private lateinit var cameraSelector: CameraSelector
 
     companion object {
         const val TAG = "CameraXExtension"
@@ -143,7 +146,8 @@ class CameraXHelper(
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         val uri: Uri = Uri.fromParts("package", applicationContext.packageName, null)
         intent.data = uri
-        activity.startActivityForResult(intent,
+        activity.startActivityForResult(
+            intent,
             REQUEST_PERMISSION_SETTING
         )
     }
@@ -166,7 +170,6 @@ class CameraXHelper(
 
         // setup preview
         val preview = setupPreview(cameraSelector)
-
 
 
         val imageAnalysis = getImageAnalysis()
@@ -254,7 +257,11 @@ class CameraXHelper(
 
         val barcodeXAnalyzer = BarcodeXAnalyzer(
             barcodeXAnalyzerCallback
-        )
+        ).also {
+            if (supportedFormats != null)
+                it.supportedFormats = supportedFormats
+        }
+
         barcodeXAnalyzer.detectionSpeed = detectionSpeed
 
         imageAnalysis.setAnalyzer(executor, barcodeXAnalyzer)
@@ -301,38 +308,38 @@ class CameraXHelper(
      * @return True if device support Flash, otherwise it'll return False
      */
     fun torchOff(): Boolean {
-        return if(hasFlash()){
+        return if (hasFlash()) {
             enableTorch(false)
             true
-        }else false
+        } else false
     }
 
     /**
      * @return True if device support Flash, otherwise it'll return False
      */
     fun torchOn(): Boolean {
-        return if(hasFlash()){
+        return if (hasFlash()) {
             enableTorch(true)
             true
-        }else false
+        } else false
     }
 
     /**
      * @return True if torch is on, and off if torch is off. Also it return null if device doesn't support torch
      */
     fun toggleTorch(): Boolean? {
-        if(!hasFlash()) return null
-        return if(camera?.cameraInfo?.torchState?.value == TorchState.ON){
+        if (!hasFlash()) return null
+        return if (camera?.cameraInfo?.torchState?.value == TorchState.ON) {
             torchOff()
             false
-        }else{
+        } else {
             torchOn()
             true
         }
     }
 
     private fun hasFlash() = camera?.cameraInfo?.hasFlashUnit() == true
-    private fun enableTorch(torch:Boolean){
+    private fun enableTorch(torch: Boolean) {
         camera?.cameraControl?.enableTorch(torch)
     }
 

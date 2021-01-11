@@ -7,6 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode.FORMAT_CODE_128
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode.FORMAT_QR_CODE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
 import kotlinx.android.synthetic.main.activity_barcodex.*
@@ -36,7 +38,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        barcodeX.setup(this, this)
+        barcodeX.setup(this, this,intArrayOf(FORMAT_CODE_128, FORMAT_QR_CODE))
         barcodeX.addAnalyzerCallBack(barcodeXAnalyzerCallBack)
         ibTorch.setOnClickListener{
             toggleTorch()
