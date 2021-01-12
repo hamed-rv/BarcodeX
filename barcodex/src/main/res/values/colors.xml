@@ -2,4 +2,5 @@
 <resources>
     <color name="green3_translucent">#6600B850</color>
     <color name="red_translucent">#669c1920</color>
+    <color name="dark_frame_color">#A6000000</color>
 </resources>
