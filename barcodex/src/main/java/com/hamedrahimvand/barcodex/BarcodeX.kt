@@ -4,13 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.lifecycle.LifecycleOwner
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
+import com.hamedrahimvand.barcodex.custom.DarkFrame
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzer.Companion.DEFAULT_DETECTION_SPEED
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
@@ -36,10 +39,24 @@ class BarcodeX @JvmOverloads constructor(
     private var isScaled = false
     private var detectionSpeed = DEFAULT_DETECTION_SPEED
 
+    /**
+     * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
+     */
+    var autoDrawEnabled = true
+
     init {
         View.inflate(context, R.layout.barcodex, this)
         barcodeBoundingBox = findViewById(R.id.barcodeBoundingBox)
         getAttrs()
+        addView(DarkFrame(context))
+        addView(scanFrame(context))
+    }
+
+    private fun scanFrame(context: Context) = ImageView(context).apply {
+        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).also {
+            it.gravity = Gravity.CENTER
+        }
+        setImageResource(R.drawable.ic_scan_frame)
     }
 
     private fun getAttrs() {
@@ -135,15 +152,9 @@ class BarcodeX @JvmOverloads constructor(
 
         override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
             Handler(context.mainLooper).post {
-                //draw
-                val barcodeBoundList = qrCodes.toBoundingBox() {
-                    getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
-                }
-                barcodeBoundingBox.drawBoundingBox(barcodeBoundList)
+                if (autoDrawEnabled)
+                    drawBoundaries(qrCodes)
                 analyzerCallBacks.forEach {
-                    if (qrCodes.isNullOrEmpty()) {
-                        return@forEach
-                    }
                     it.onQrCodesDetected(qrCodes)
                 }
             }
@@ -155,6 +166,13 @@ class BarcodeX @JvmOverloads constructor(
             }
         }
 
+    }
+
+    fun drawBoundaries(barcodeList: List<FirebaseVisionBarcode>) {
+        val barcodeBoundList = barcodeList.toBoundingBox() {
+            getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
+        }
+        barcodeBoundingBox.drawBoundingBox(barcodeBoundList)
     }
 
     fun recalculate() {
@@ -194,6 +212,10 @@ class BarcodeX @JvmOverloads constructor(
      */
     fun clearView() {
 
+    }
+
+    fun clearCash(){
+        barcodeMap.clear()
     }
 }
 
