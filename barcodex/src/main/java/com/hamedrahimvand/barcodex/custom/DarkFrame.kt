@@ -14,6 +14,7 @@ class DarkFrame @JvmOverloads constructor(
     private var mTransparentPaint: Paint? = null
     private var mSemiBlackPaint: Paint? = null
     private val mPath = Path()
+    private var cropRect = RectF()
 
     init {
         initPaints()
@@ -40,13 +41,13 @@ class DarkFrame @JvmOverloads constructor(
             centerOfCanvas = Point(width / 2, height / 2)
         val rectW = width / 2
         val rectH = width / 2
-        val left = (centerOfCanvas!!.x - rectW / 2).toFloat()
-        val top = (centerOfCanvas!!.y - rectH / 2).toFloat()
-        val right = (centerOfCanvas!!.x + rectW / 2).toFloat()
-        val bottom = (centerOfCanvas!!.y + rectH / 2).toFloat()
+        cropRect.left = (centerOfCanvas!!.x - rectW / 2).toFloat()
+        cropRect.top = (centerOfCanvas!!.y - rectH / 2).toFloat()
+        cropRect.right = (centerOfCanvas!!.x + rectW / 2).toFloat()
+        cropRect.bottom = (centerOfCanvas!!.y + rectH / 2).toFloat()
 
         mPath.reset()
-        mPath.addRect(left, top, right, bottom, Path.Direction.CW)
+        mPath.addRect(cropRect, Path.Direction.CW)
         mPath.fillType = Path.FillType.INVERSE_EVEN_ODD
 
         mTransparentPaint?.let {
@@ -59,5 +60,14 @@ class DarkFrame @JvmOverloads constructor(
         mSemiBlackPaint?.let { canvas.drawPath(mPath, it) }
         canvas.clipPath(mPath)
         canvas.drawColor(ContextCompat.getColor(context, R.color.dark_frame_color))
+    }
+
+    fun getCropRect(scale: Float): RectF {
+        val r = RectF()
+        r.left = cropRect.left/scale
+        r.top = cropRect.top/scale
+        r.right = cropRect.right/scale
+        r.bottom = cropRect.bottom/scale
+        return r
     }
 }

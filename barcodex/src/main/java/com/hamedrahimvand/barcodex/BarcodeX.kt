@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
+import androidx.core.graphics.toRect
 import androidx.lifecycle.LifecycleOwner
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
@@ -38,6 +39,8 @@ class BarcodeX @JvmOverloads constructor(
     private var barcodeBoundingBox: BarcodeBoundingBox
     private var isScaled = false
     private var detectionSpeed = DEFAULT_DETECTION_SPEED
+    private var darkFrame = DarkFrame(context)
+    private var scale = 0F
 
     /**
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
@@ -48,7 +51,7 @@ class BarcodeX @JvmOverloads constructor(
         View.inflate(context, R.layout.barcodex, this)
         barcodeBoundingBox = findViewById(R.id.barcodeBoundingBox)
         getAttrs()
-        addView(DarkFrame(context))
+        addView(darkFrame)
         addView(scanFrame(context))
     }
 
@@ -130,7 +133,7 @@ class BarcodeX @JvmOverloads constructor(
                 isScaled = true
                 val min: Int = w.coerceAtMost(h)
                 val max: Int = w.coerceAtLeast(h)
-                val scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
+                scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
                 if (height < max) {
                     barcodeBoundingBox.scaleY = 1f
                     barcodeBoundingBox.translationY = (-abs(height - max)).toFloat() / 2
@@ -152,10 +155,17 @@ class BarcodeX @JvmOverloads constructor(
 
         override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
             Handler(context.mainLooper).post {
+                val filteredList = qrCodes.filter {
+                    if (it.boundingBox == null) {
+                        false
+                    } else {
+                        darkFrame.getCropRect(scale).toRect().contains(it.boundingBox!!)
+                    }
+                }
                 if (autoDrawEnabled)
-                    drawBoundaries(qrCodes)
+                    drawBoundaries(filteredList)
                 analyzerCallBacks.forEach {
-                    it.onQrCodesDetected(qrCodes)
+                    it.onQrCodesDetected(filteredList)
                 }
             }
         }
@@ -214,7 +224,7 @@ class BarcodeX @JvmOverloads constructor(
 
     }
 
-    fun clearCash(){
+    fun clearCash() {
         barcodeMap.clear()
     }
 }
