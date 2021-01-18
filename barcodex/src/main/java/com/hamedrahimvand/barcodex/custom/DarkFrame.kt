@@ -61,13 +61,7 @@ class DarkFrame @JvmOverloads constructor(
         canvas.clipPath(mPath)
         canvas.drawColor(ContextCompat.getColor(context, R.color.dark_frame_color))
     }
-
-    fun getCropRect(scale: Float): RectF {
-        val r = RectF()
-        r.left = cropRect.left/scale
-        r.top = cropRect.top/scale
-        r.right = cropRect.right/scale
-        r.bottom = cropRect.bottom/scale
-        return r
+    fun getCropRect(): RectF {
+        return cropRect
     }
 }

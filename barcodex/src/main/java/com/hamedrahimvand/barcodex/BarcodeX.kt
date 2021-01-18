@@ -2,6 +2,7 @@ package com.hamedrahimvand.barcodex
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Rect
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.Gravity
@@ -40,7 +41,8 @@ class BarcodeX @JvmOverloads constructor(
     private var isScaled = false
     private var detectionSpeed = DEFAULT_DETECTION_SPEED
     private var darkFrame = DarkFrame(context)
-    private var scale = 0F
+    private var scale = 0f to 0f
+    private var translation = 0f to 0f
 
     /**
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
@@ -133,12 +135,12 @@ class BarcodeX @JvmOverloads constructor(
                 isScaled = true
                 val min: Int = w.coerceAtMost(h)
                 val max: Int = w.coerceAtLeast(h)
-                scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
+                val localScale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min)
                 if (height < max) {
                     barcodeBoundingBox.scaleY = 1f
                     barcodeBoundingBox.translationY = (-abs(height - max)).toFloat() / 2
                 } else {
-                    barcodeBoundingBox.scaleY = scale
+                    barcodeBoundingBox.scaleY = localScale
                     barcodeBoundingBox.translationY =
                         ((height - max).toFloat() / 2) * barcodeBoundingBox.scaleY
                 }
@@ -146,10 +148,12 @@ class BarcodeX @JvmOverloads constructor(
                     barcodeBoundingBox.scaleX = 1f
                     barcodeBoundingBox.translationX = (-abs(width - min)).toFloat() / 2
                 } else {
-                    barcodeBoundingBox.scaleX = scale
+                    barcodeBoundingBox.scaleX = localScale
                     barcodeBoundingBox.translationX =
                         ((width - min).toFloat() / 2) * barcodeBoundingBox.scaleX
                 }
+                scale = barcodeBoundingBox.scaleX to barcodeBoundingBox.scaleY
+                translation = barcodeBoundingBox.translationX to barcodeBoundingBox.translationY
             }
         }
 
@@ -159,7 +163,15 @@ class BarcodeX @JvmOverloads constructor(
                     if (it.boundingBox == null) {
                         false
                     } else {
-                        darkFrame.getCropRect(scale).toRect().contains(it.boundingBox!!)
+                        val scaledBound = Rect(it.boundingBox!!).apply {
+//                            left = ((left*scale.first) + (640 - translation.first) / scale.first).toInt()
+                            left = (left * scale.first).toInt()
+                            top = (top * scale.second).toInt()
+//                            right = ((right*scale.first).toInt()  + (640 - translation.first) / scale.first).toInt()
+                            right = (right * scale.first).toInt()
+                            bottom = (bottom * scale.second).toInt()
+                        }
+                        darkFrame.getCropRect().toRect().contains(scaledBound)
                     }
                 }
                 if (autoDrawEnabled)
