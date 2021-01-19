@@ -187,7 +187,7 @@ class CameraXHelper(
     }
 
     private fun setupPreview(cameraSelector: CameraSelector): Preview {
-        val previewBuilder = Preview.Builder()
+        val previewBuilder = setupPreviewBuilder()
 
         setBokehEffect(previewBuilder, cameraSelector)
 
@@ -198,6 +198,11 @@ class CameraXHelper(
         return preview
     }
 
+    private fun setupPreviewBuilder(): Preview.Builder {
+        return Preview.Builder().apply {
+            setTargetAspectRatio(AspectRatio.RATIO_16_9)
+        }
+    }
 
     private fun setupImageCapture(): ImageCapture {
         return ImageCapture.Builder().apply {

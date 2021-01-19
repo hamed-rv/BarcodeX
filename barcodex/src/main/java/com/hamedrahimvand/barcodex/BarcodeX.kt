@@ -42,7 +42,6 @@ class BarcodeX @JvmOverloads constructor(
     private var detectionSpeed = DEFAULT_DETECTION_SPEED
     private var darkFrame = DarkFrame(context)
     private var scale = 0f to 0f
-    private var translation = 0f to 0f
 
     /**
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
@@ -152,11 +151,8 @@ class BarcodeX @JvmOverloads constructor(
                     barcodeBoundingBox.translationX =
                         ((width - min).toFloat() / 2) * barcodeBoundingBox.scaleX
                 }
-                //TODO refactor me
-                scale = (barcodeBoundingBox.width.toFloat() / min) to barcodeBoundingBox.scaleY
-//                translation = barcodeBoundingBox.translationX to barcodeBoundingBox.translationY
-                translation = ((barcodeBoundingBox.width.toFloat() - min) / (4 * scale.first)).toFloat() to (abs(barcodeBoundingBox.height - max) / 4).toFloat()
-//                translation = (abs(barcodeBoundingBox.width - max) / ((width.toFloat()/w) * (height.toFloat()/h) * 2 )) to (abs(barcodeBoundingBox.height - max) / 4).toFloat()
+                scale = (height.toFloat() / max).coerceAtLeast(width.toFloat() / min) to
+                        (height.toFloat() / max).coerceAtMost(width.toFloat() / min)
             }
         }
 
@@ -166,21 +162,13 @@ class BarcodeX @JvmOverloads constructor(
                     if (it.boundingBox == null) {
                         false
                     } else {
-                        //TODO refactor me
                         val scaledBound = Rect(it.boundingBox!!).apply {
-//                            left = ((left*scale.first) + (640 - translation.first) / scale.first).toInt()
-                            left = ((left * scale.first) + translation.first).toInt()
+                            left = (left * scale.first).toInt()
                             top = (top * scale.second).toInt()
-//                            right = ((right*scale.first).toInt()  + (640 - translation.first) / scale.first).toInt()
-                            right = ((right * scale.first) + translation.first).toInt()
+                            right = (right * scale.first).toInt()
                             bottom = (bottom * scale.second).toInt()
                         }
-                        val rect = Rect(darkFrame.getCropRect().toRect())
-                        rect.apply {
-                            left = (width.toFloat() / 4).toInt()
-                            right = ( (width.toFloat() * 4) / 5).toInt()
-                        }
-                        rect.contains(scaledBound)
+                        darkFrame.getCropRect().toRect().contains(scaledBound)
                     }
                 }
                 if (autoDrawEnabled)
