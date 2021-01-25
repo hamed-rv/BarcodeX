@@ -1,6 +1,9 @@
-def libraryGroupId = 'com.rvhamed.barcodex'
+def libraryGroupId = group
 def libraryArtifactId = 'barcodex'
 def libraryVersion = 'v1.0-beta04'
+def libraryDescription = 'Scan barcodes and qrcodes with MLKit. In this project MLKit and CameraX are combined with each other.'
+def libraryVersionDescription = ''
+def libVcsUrl = 'https://github.com/rvhamed/BarcodeX'
 
 //For upload use this command: ./gradlew clean build bintrayUpload
 //./gradlew clean build bintrayUpload -PbintrayUser=$B_USER -PbintrayKey=$B_KEY
@@ -50,13 +53,16 @@ bintray {
     pkg {
         repo = 'BarcodeX'
         name = libraryArtifactId
-        desc = 'Scan barcodes and qrcodes with MLKit. In this project MLKit and CameraX are combined with each other.'
+        desc = libraryDescription
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/rvhamed/BarcodeX'
+        vcsUrl = libVcsUrl
         publicDownloadNumbers = true
+        userOrg = 'rvhamed'
         version {
             name = libraryVersion
             released = new Date()
+            desc = libraryVersionDescription
+            vcsTag = libraryVersion
         }
     }
     filesSpec {
