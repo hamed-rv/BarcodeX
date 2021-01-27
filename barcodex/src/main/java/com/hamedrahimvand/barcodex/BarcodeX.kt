@@ -43,10 +43,16 @@ class BarcodeX @JvmOverloads constructor(
     private var darkFrame = DarkFrame(context)
     private var scale = 0f to 0f
 
+    private val qrList = hashMapOf<String,Int>()// arrayListOf<Pair<FirebaseVisionBarcode,Int>>()
+
     /**
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
      */
     var autoDrawEnabled = true
+
+    companion object{
+        private val ITERATE_THRESHOLD = 2 //scan iteration to ensure the verified scan
+    }
 
     init {
         View.inflate(context, R.layout.barcodex, this)
@@ -174,7 +180,24 @@ class BarcodeX @JvmOverloads constructor(
                 if (autoDrawEnabled)
                     drawBoundaries(filteredList)
                 analyzerCallBacks.forEach {
-                    it.onQrCodesDetected(filteredList)
+
+                    val resultFilterList = mutableListOf<FirebaseVisionBarcode>()
+
+                    filteredList.forEach {newBarcode ->
+                        val displayValue = newBarcode.displayValue
+                        val index = qrList.containsKey(displayValue)
+                        if (index){
+                            if (qrList[displayValue]!! >= ITERATE_THRESHOLD){
+                                resultFilterList.add(newBarcode)
+                            } else {
+                                qrList[displayValue!!] =  (qrList[displayValue] ?: 0) + 1
+                            }
+                        } else {
+                            displayValue?.let { it1 -> qrList.put(it1, 1) }
+                        }
+                    }
+
+                    it.onQrCodesDetected(resultFilterList)
                 }
             }
         }
