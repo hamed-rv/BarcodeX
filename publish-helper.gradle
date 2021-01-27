@@ -1,6 +1,6 @@
 def libraryGroupId = group
 def libraryArtifactId = 'barcodex'
-def libraryVersion = 'v1.0-beta04'
+def libraryVersion = 'v1.0-beta05'
 def libraryDescription = 'Scan barcodes and qrcodes with MLKit. In this project MLKit and CameraX are combined with each other.'
 def libraryVersionDescription = ''
 def libVcsUrl = 'https://github.com/rvhamed/BarcodeX'
