@@ -51,6 +51,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
 
             //draw all due to business logic
             barcodeX.drawBoundaries(qrCodes)
+            tvCount.text = myBarcodeList.size.toString()
         }
 
         override fun onQrCodesFailed(exception: Exception) {

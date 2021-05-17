@@ -3,6 +3,7 @@ package com.hamedrahimvand.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.hamedrahimvand.barcodex.BarcodeXActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -11,5 +12,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val intent = BarcodeXActivity.getLauncherIntent(this)
         startActivity(intent)
+        button.setOnClickListener {
+            startActivity(intent)
+        }
     }
 }
