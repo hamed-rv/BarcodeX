@@ -18,6 +18,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.common.util.concurrent.ListenableFuture
@@ -35,7 +36,6 @@ class CameraXHelper(
     val previewView: PreviewView,
     val lifecycleOwner: LifecycleOwner,
     val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack,
-    val detectionSpeed: Long,
     @Barcode.BarcodeFormat
     val supportedFormats: IntArray? = null
 ) {
@@ -182,7 +182,7 @@ class CameraXHelper(
         // setup preview
         val preview = setupPreview()
 
-        val imageAnalysis = getImageAnalysis()
+        imageAnalysis = initialImageAnalysis()
 
         camera = cameraProvider?.bindToLifecycle(
             lifecycleOwner,
@@ -248,9 +248,11 @@ class CameraXHelper(
             })
     }
 
-    private fun getImageAnalysis(): ImageAnalysis {
+    var imageAnalysis: ImageAnalysis? = null
 
-        val imageAnalysis = ImageAnalysis.Builder()
+    private fun initialImageAnalysis(): ImageAnalysis? {
+
+        imageAnalysis = ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .setTargetAspectRatio(AspectRatio.RATIO_16_9)
             .build()
@@ -262,9 +264,8 @@ class CameraXHelper(
                 it.supportedFormats = supportedFormats
         }
 
-        barcodeXAnalyzer.detectionSpeed = detectionSpeed
 
-        imageAnalysis.setAnalyzer(executor, barcodeXAnalyzer)
+        imageAnalysis?.setAnalyzer(executor, barcodeXAnalyzer)
 
         return imageAnalysis
     }
@@ -355,7 +356,7 @@ class CameraXHelper(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun shutDown(){
+    fun shutDown() {
         executor.shutdown()
     }
 }

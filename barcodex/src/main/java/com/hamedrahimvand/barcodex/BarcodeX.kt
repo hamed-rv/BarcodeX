@@ -39,7 +39,6 @@ class BarcodeX @JvmOverloads constructor(
 
     private var barcodeBoundingBox: BarcodeBoundingBox
     private var isScaled = false
-    private var detectionSpeed = DEFAULT_DETECTION_SPEED
     private var darkFrame = DarkFrame(context)
     private var scale = 0f to 0f
 
@@ -57,7 +56,6 @@ class BarcodeX @JvmOverloads constructor(
     init {
         View.inflate(context, R.layout.barcodex, this)
         barcodeBoundingBox = findViewById(R.id.barcodeBoundingBox)
-        getAttrs()
         addView(darkFrame)
         addView(scanFrame(context))
     }
@@ -69,13 +67,6 @@ class BarcodeX @JvmOverloads constructor(
         setImageResource(R.drawable.ic_scan_frame)
     }
 
-    private fun getAttrs() {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeX)
-        detectionSpeed =
-            a.getInteger(R.styleable.BarcodeX_bx_detection_speed, DEFAULT_DETECTION_SPEED.toInt())
-                .toLong()
-        a.recycle()
-    }
 
     fun setup(
         activity: Activity,
@@ -87,7 +78,6 @@ class BarcodeX @JvmOverloads constructor(
             previewView = findViewById(R.id.previewView),
             lifecycleOwner = lifecycleOwner,
             barcodeXAnalyzerCallback = analyzerCallBack,
-            detectionSpeed = detectionSpeed,
             supportedFormats = supportedFormats
         )
         cameraXHelper.requestPermission(activity)

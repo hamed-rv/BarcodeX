@@ -25,7 +25,6 @@ class BarcodeXAnalyzer(
     private val timer = Timer()
     private var isLocked = false
     private var isPaused = false
-    var detectionSpeed = DEFAULT_DETECTION_SPEED
 
 
     @Barcode.BarcodeFormat
@@ -46,8 +45,9 @@ class BarcodeXAnalyzer(
         try {
             barcodeXAnalyzerCallback.onNewFrame(imageProxy.width, imageProxy.height)
 
-            val rotation = rotationDegreesToFirebaseRotation(imageProxy.imageInfo.rotationDegrees)
-            val image = InputImage.fromMediaImage( imageProxy.image, imageProxy.imageInfo.rotationDegrees)
+//            val rotation = rotationDegreesToFirebaseRotation(imageProxy.imageInfo.rotationDegrees)
+            val image =
+                InputImage.fromMediaImage(imageProxy.image, imageProxy.imageInfo.rotationDegrees)
 
             val scanner = BarcodeScanning.getClient(
                 BarcodeScannerOptions.Builder()
@@ -61,14 +61,7 @@ class BarcodeXAnalyzer(
 
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
-                    barcodes?.firstOrNull().let { barcode ->
-                        val rawValue = barcode?.rawValue
-                        rawValue?.let {
-                            Log.d("Barcode", it)
-                            barcodeXAnalyzerCallback.onQrCodesDetected(barcodes)
-                        }
-                    }
-
+                    barcodeXAnalyzerCallback.onQrCodesDetected(barcodes)
                     isLocked = false
                     imageProxy.close()
                 }

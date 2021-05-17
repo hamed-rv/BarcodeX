@@ -19,7 +19,7 @@
         android:id="@+id/barcodeX"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:bx_detection_speed="60" />
+        />
 
     <ImageButton
         android:id="@+id/ibTorch"
