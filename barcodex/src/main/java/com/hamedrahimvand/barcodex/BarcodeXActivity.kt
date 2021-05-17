@@ -9,9 +9,9 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode.FORMAT_CODE_128
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode.FORMAT_QR_CODE
+import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.Barcode.FORMAT_CODE_128
+import com.google.mlkit.vision.barcode.Barcode.FORMAT_QR_CODE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import kotlinx.android.synthetic.main.activity_barcodex.*
 
@@ -28,10 +28,10 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             Intent(context, BarcodeXActivity::class.java)
     }
 
-    var myBarcodeList: MutableList<FirebaseVisionBarcode> = mutableListOf()
+    var myBarcodeList: MutableList<Barcode> = mutableListOf()
     var lastNotifyTime = System.currentTimeMillis()
     var barcodeXAnalyzerCallBack = object : BarcodeXAnalyzerCallBack {
-        override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
+        override fun onQrCodesDetected(qrCodes: List<Barcode>) {
             //find difference between myBarcodeList and qrCodes by displayValue
             //combine two list
             val tempList = qrCodes + myBarcodeList

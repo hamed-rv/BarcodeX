@@ -13,7 +13,7 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.graphics.toRect
 import androidx.lifecycle.LifecycleOwner
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.mlkit.vision.barcode.Barcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
 import com.hamedrahimvand.barcodex.custom.DarkFrame
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
@@ -43,7 +43,7 @@ class BarcodeX @JvmOverloads constructor(
     private var darkFrame = DarkFrame(context)
     private var scale = 0f to 0f
 
-    private val qrList = hashMapOf<String,Int>()// arrayListOf<Pair<FirebaseVisionBarcode,Int>>()
+    private val qrList = hashMapOf<String,Int>()// arrayListOf<Pair<Barcode,Int>>()
 
     /**
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
@@ -80,7 +80,7 @@ class BarcodeX @JvmOverloads constructor(
     fun setup(
         activity: Activity,
         lifecycleOwner: LifecycleOwner,
-        @FirebaseVisionBarcode.BarcodeFormat
+        @Barcode.BarcodeFormat
         supportedFormats: IntArray? = null
     ) {
         cameraXHelper = CameraXHelper(
@@ -162,7 +162,7 @@ class BarcodeX @JvmOverloads constructor(
             }
         }
 
-        override fun onQrCodesDetected(qrCodes: List<FirebaseVisionBarcode>) {
+        override fun onQrCodesDetected(qrCodes: List<Barcode>) {
             Handler(context.mainLooper).post {
                 val filteredList = qrCodes.filter {
                     if (it.boundingBox == null) {
@@ -181,7 +181,7 @@ class BarcodeX @JvmOverloads constructor(
                     drawBoundaries(filteredList)
                 analyzerCallBacks.forEach {
 
-                    val resultFilterList = mutableListOf<FirebaseVisionBarcode>()
+                    val resultFilterList = mutableListOf<Barcode>()
 
                     filteredList.forEach {newBarcode ->
                         val displayValue = newBarcode.displayValue
@@ -210,7 +210,7 @@ class BarcodeX @JvmOverloads constructor(
 
     }
 
-    fun drawBoundaries(barcodeList: List<FirebaseVisionBarcode>) {
+    fun drawBoundaries(barcodeList: List<Barcode>) {
         val barcodeBoundList = barcodeList.toBoundingBox() {
             getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
         }

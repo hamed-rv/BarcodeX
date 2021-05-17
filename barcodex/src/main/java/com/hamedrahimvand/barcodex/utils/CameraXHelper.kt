@@ -17,9 +17,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.mlkit.vision.barcode.Barcode
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -34,7 +36,7 @@ class CameraXHelper(
     val lifecycleOwner: LifecycleOwner,
     val barcodeXAnalyzerCallback: BarcodeXAnalyzerCallBack,
     val detectionSpeed: Long,
-    @FirebaseVisionBarcode.BarcodeFormat
+    @Barcode.BarcodeFormat
     val supportedFormats: IntArray? = null
 ) {
 
@@ -159,8 +161,16 @@ class CameraXHelper(
         if (!allPermissionsGranted())
             throw SecurityException("Permission Denial, call CameraXHelper#requestPermission()")
         cameraProviderFuture = ProcessCameraProvider.getInstance(applicationContext)
-        cameraProvider = cameraProviderFuture.get()
-        // setup image capture
+        cameraProviderFuture.addListener(Runnable {
+            cameraProvider = cameraProviderFuture.get()
+            bindPreview(cameraProvider)
+        }, ContextCompat.getMainExecutor(applicationContext))
+    }
+
+    private fun bindPreview(cameraProvider: ProcessCameraProvider?) {
+        cameraProvider?.unbindAll()
+
+//         setup image capture
         imageCapture = setupImageCapture()
 
 
@@ -170,8 +180,7 @@ class CameraXHelper(
                 .build()
 
         // setup preview
-        val preview = setupPreview(cameraSelector)
-
+        val preview = setupPreview()
 
         val imageAnalysis = getImageAnalysis()
 
@@ -186,10 +195,8 @@ class CameraXHelper(
 
     }
 
-    private fun setupPreview(cameraSelector: CameraSelector): Preview {
+    private fun setupPreview(): Preview {
         val previewBuilder = setupPreviewBuilder()
-
-        setBokehEffect(previewBuilder, cameraSelector)
 
         val preview = previewBuilder.build()
         preview.setSurfaceProvider(
@@ -210,15 +217,6 @@ class CameraXHelper(
         }.build()
     }
 
-    private fun setBokehEffect(
-        previewBuilder: Preview.Builder,
-        cameraSelector: CameraSelector
-    ) {
-        val bokehPreviewExtender = BokehPreviewExtender.create(previewBuilder)
-        if (bokehPreviewExtender.isExtensionAvailable(cameraSelector)) {
-            bokehPreviewExtender.enableExtension(cameraSelector)
-        }
-    }
 
     /**
      * Take photo and store it on file automatically
@@ -354,5 +352,10 @@ class CameraXHelper(
     fun resumeDetection() {
         if (::barcodeXAnalyzer.isInitialized)
             barcodeXAnalyzer.resumeDetection()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun shutDown(){
+        executor.shutdown()
     }
 }
