@@ -1,4 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/rvhamed/BarcodeX/barcodex/images/download.svg) ](https://bintray.com/rvhamed/BarcodeX/barcodex/_latestVersion)
+[![](https://jitpack.io/v/rvhamed/BarcodeX.svg)](https://jitpack.io/#rvhamed/BarcodeX)
 # BarcodeX 
 
 Scan barcodes and qrcodes with MLKit. In this project MLKit and CameraX are combined with each other.
@@ -8,12 +8,24 @@ Continuously, Frames come from CameraX and will be passed to MlKit, directly. In
 
 ## Implementation
 
-*Just:* Add the dependency
+Step 1. Add it in your root build.gradle at the end of repositories:
 
-	dependencies {
-	        implementation 'com.github.rvhamed:barcodex:Tag'
+```
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
 	}
-  
+```
+
+Step 2. Add the dependency
+```
+	dependencies {
+	        implementation 'com.github.rvhamed:BarcodeX:VERSION'
+	}
+```
+
 
  ## ScreenShot
   
