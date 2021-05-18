@@ -17,7 +17,6 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
 import com.hamedrahimvand.barcodex.custom.DarkFrame
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
-import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzer.Companion.DEFAULT_DETECTION_SPEED
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
 import com.hamedrahimvand.barcodex.utils.toBoundingBox
@@ -200,9 +199,13 @@ class BarcodeX @JvmOverloads constructor(
 
     }
 
-    fun drawBoundaries(barcodeList: List<Barcode>) {
-        val barcodeBoundList = barcodeList.toBoundingBox() {
-            getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
+    fun drawBoundaries(
+        barcodeList: List<Barcode>,
+        getBarcodeBoundingBoxState: ((Barcode) -> BarcodeBoundingBoxStates) ={
+            BarcodeBoundingBoxStates.VALID
+        }) {
+        val barcodeBoundList = barcodeList.toBoundingBox() { barcode ->
+            getBarcodeBoundingBoxState(barcode)
         }
         barcodeBoundingBox.drawBoundingBox(barcodeBoundList)
     }

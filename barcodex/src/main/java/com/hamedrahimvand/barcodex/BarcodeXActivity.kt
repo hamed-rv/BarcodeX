@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.Barcode.FORMAT_CODE_128
 import com.google.mlkit.vision.barcode.Barcode.FORMAT_QR_CODE
+import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import kotlinx.android.synthetic.main.activity_barcodex.*
 
@@ -50,13 +51,23 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             myBarcodeList = diff.toMutableList()
 
             //draw all due to business logic
-            barcodeX.drawBoundaries(qrCodes)
+            barcodeX.drawBoundaries(qrCodes) {
+                getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
+            }
             tvCount.text = myBarcodeList.size.toString()
         }
 
         override fun onQrCodesFailed(exception: Exception) {
             exception.printStackTrace()
         }
+    }
+
+    private fun getBarcodeBoundingBoxState(
+        type: Int,
+        displayValue: String
+    ): BarcodeBoundingBoxStates {
+        return BarcodeBoundingBoxStates.VALID
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
