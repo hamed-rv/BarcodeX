@@ -18,7 +18,10 @@
     <com.hamedrahimvand.barcodex.BarcodeX
         android:id="@+id/barcodeX"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:bx_show_dark_frame="true"
+        app:bx_crop_center="true"
+        />
 
     <ImageButton
         android:id="@+id/ibTorch"

@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="BarcodeX">
         <!-- Detection speed each x millisecond. Default is 60 -->
-<!--        <attr name="bx_detection_speed" format="integer"/>-->
+        <attr name="bx_show_dark_frame" format="boolean"/>
+        <attr name="bx_crop_center" format="boolean"/>
     </declare-styleable>
 </resources>

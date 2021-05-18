@@ -29,7 +29,7 @@ import kotlin.math.abs
  *@since 6/16/20
  */
 class BarcodeX @JvmOverloads constructor(
-    context: Context, val attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, private val attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private lateinit var cameraXHelper: CameraXHelper
@@ -47,6 +47,8 @@ class BarcodeX @JvmOverloads constructor(
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
      */
     var autoDrawEnabled = true
+    private var cropCenterScan = true
+    private var autoDarkFrame = true
 
     companion object{
         private val ITERATE_THRESHOLD = 2 //scan iteration to ensure the verified scan
@@ -54,9 +56,21 @@ class BarcodeX @JvmOverloads constructor(
 
     init {
         View.inflate(context, R.layout.barcodex, this)
+        getAttrs()
         barcodeBoundingBox = findViewById(R.id.barcodeBoundingBox)
-        addView(darkFrame)
-        addView(scanFrame(context))
+        if(autoDarkFrame) {
+            addView(darkFrame)
+            addView(scanFrame(context))
+        }
+    }
+
+    private fun getAttrs() {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.BarcodeX)
+        autoDarkFrame =
+            a.getBoolean(R.styleable.BarcodeX_bx_show_dark_frame, true)
+        cropCenterScan =
+            a.getBoolean(R.styleable.BarcodeX_bx_crop_center, true)
+        a.recycle()
     }
 
     private fun scanFrame(context: Context) = ImageView(context).apply {
@@ -154,16 +168,20 @@ class BarcodeX @JvmOverloads constructor(
         override fun onQrCodesDetected(qrCodes: List<Barcode>) {
             Handler(context.mainLooper).post {
                 val filteredList = qrCodes.filter {
-                    if (it.boundingBox == null) {
-                        false
-                    } else {
-                        val scaledBound = Rect(it.boundingBox!!).apply {
-                            left = (left * scale.first).toInt()
-                            top = (top * scale.second).toInt()
-                            right = (right * scale.first).toInt()
-                            bottom = (bottom * scale.second).toInt()
+                    if (cropCenterScan) {
+                        if (it.boundingBox == null) {
+                            false
+                        } else {
+                            val scaledBound = Rect(it.boundingBox!!).apply {
+                                left = (left * scale.first).toInt()
+                                top = (top * scale.second).toInt()
+                                right = (right * scale.first).toInt()
+                                bottom = (bottom * scale.second).toInt()
+                            }
+                            darkFrame.getCropRect().toRect().contains(scaledBound)
                         }
-                        darkFrame.getCropRect().toRect().contains(scaledBound)
+                    } else {
+                        true
                     }
                 }
                 if (autoDrawEnabled)
