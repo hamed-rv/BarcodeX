@@ -51,7 +51,10 @@ class BarcodeX @JvmOverloads constructor(
     private var autoDarkFrame = true
 
     companion object {
-        const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
+    const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
+    private var defaultLeft = 100
+    private var defaultRight = 120
+
     }
 
     var threshold = THRESHOLD_DEFAULT
@@ -163,8 +166,8 @@ class BarcodeX @JvmOverloads constructor(
                             false
                         } else {
                             val scaledBound = Rect(it.boundingBox!!).apply {
-                                left = (left * scale.first).toInt()
-                                top = (top * scale.second).toInt()
+                                left = (left * scale.first).toInt() //+ defaultLeft
+                                top = (top * scale.second).toInt() + defaultRight
                                 right = (right * scale.first).toInt()
                                 bottom = (bottom * scale.second).toInt()
                             }
