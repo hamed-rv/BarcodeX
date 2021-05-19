@@ -52,14 +52,12 @@ class BarcodeX @JvmOverloads constructor(
 
     companion object {
         const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
-    private var defaultLeft = 100
-    private var defaultRight = 120
+        private var defaultLeft = 100
+        private var defaultRight = 120
 
-    companion object{
-        private val ITERATE_THRESHOLD = 2 //scan iteration to ensure the verified scan
+        var threshold = THRESHOLD_DEFAULT
+
     }
-
-    var threshold = THRESHOLD_DEFAULT
 
     init {
         View.inflate(context, R.layout.barcodex, this)
@@ -207,7 +205,7 @@ class BarcodeX @JvmOverloads constructor(
                         }
                     }
                     callback.onQrCodesDetected(resultFilterList)
-                    if(filteredList.isNotEmpty()){
+                    if (filteredList.isNotEmpty()) {
                         //Request focus on new barcode detected
                         cameraXHelper.requestFocus()
                     }
@@ -223,7 +221,7 @@ class BarcodeX @JvmOverloads constructor(
 
     }
 
-    fun clearBoundaries(){
+    fun clearBoundaries() {
         barcodeBoundingBox.drawBoundingBox(listOf())
     }
 
