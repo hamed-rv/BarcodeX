@@ -5,8 +5,8 @@ import com.hamedrahimvand.barcodex.utils.toBarcodeType
 
 class XBarcodeMapper {
 
-    fun mapToXBarcode(barcode: Barcode): XBarcode {
-        return XBarcode(
+    fun mapToXBarcode(barcode: Barcode): BarcodeX {
+        return BarcodeX(
             barcode.displayValue ?: "",
             barcode.boundingBox,
             barcode.format,
@@ -15,7 +15,7 @@ class XBarcodeMapper {
         )
     }
 
-    fun mapToBoundingBox(xBarcode: XBarcode): BarcodeBoundingBoxModel {
+    fun mapToBoundingBox(xBarcode: BarcodeX): BarcodeBoundingBoxModel {
         return BarcodeBoundingBoxModel(
             xBarcode.boundingBox,
             xBarcode.valueType.toBarcodeType(),

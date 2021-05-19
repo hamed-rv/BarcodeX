@@ -2,7 +2,7 @@ package com.hamedrahimvand.barcodex.utils
 
 import com.google.mlkit.vision.barcode.Barcode
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxModel
-import com.hamedrahimvand.barcodex.model.XBarcode
+import com.hamedrahimvand.barcodex.model.BarcodeX
 import com.hamedrahimvand.barcodex.model.XBarcodeMapper
 
 /**
@@ -10,7 +10,7 @@ import com.hamedrahimvand.barcodex.model.XBarcodeMapper
  *@author Hamed.Rahimvand
  *@since 1/9/21
  */
-fun List<XBarcode>.toBoundingBox(): List<BarcodeBoundingBoxModel> {
+fun List<BarcodeX>.toBoundingBox(): List<BarcodeBoundingBoxModel> {
     return this.map { xbarcode ->
         XBarcodeMapper().mapToBoundingBox(xbarcode)
     }

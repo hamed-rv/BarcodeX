@@ -16,8 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import com.google.mlkit.vision.barcode.Barcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
 import com.hamedrahimvand.barcodex.custom.DarkFrame
-import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
-import com.hamedrahimvand.barcodex.model.XBarcode
+import com.hamedrahimvand.barcodex.model.BarcodeX
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
 import com.hamedrahimvand.barcodex.utils.toBoundingBox
@@ -52,8 +51,10 @@ class BarcodeX @JvmOverloads constructor(
     private var autoDarkFrame = true
 
     companion object {
-        private val ITERATE_THRESHOLD = 2 //scan iteration to ensure the verified scan
+        const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
     }
+
+    var threshold = THRESHOLD_DEFAULT
 
     init {
         View.inflate(context, R.layout.barcodex, this)
@@ -154,7 +155,7 @@ class BarcodeX @JvmOverloads constructor(
             }
         }
 
-        override fun onQrCodesDetected(qrCodes: List<XBarcode>) {
+        override fun onQrCodesDetected(qrCodes: List<BarcodeX>) {
             Handler(context.mainLooper).post {
                 val filteredList = qrCodes.filter {
                     if (cropCenterScan) {
@@ -173,7 +174,7 @@ class BarcodeX @JvmOverloads constructor(
                         true
                     }
                 }.map { barcode ->
-                    XBarcode(
+                    BarcodeX(
                         barcode.displayValue,
                         barcode.boundingBox,
                         barcode.format,
@@ -185,22 +186,26 @@ class BarcodeX @JvmOverloads constructor(
                     drawBoundaries(filteredList)
                 analyzerCallBacks.forEach { callback ->
 
-                    val resultFilterList = mutableListOf<XBarcode>()
+                    val resultFilterList = mutableListOf<BarcodeX>()
 
                     filteredList.forEach { newBarcode ->
                         val displayValue = newBarcode.displayValue
                         val index = qrList.containsKey(displayValue)
                         if (index) {
-                            if (qrList[displayValue]!! >= ITERATE_THRESHOLD) {
+                            if (qrList[displayValue]!! >= threshold) {
                                 resultFilterList.add(newBarcode)
                             } else {
-                                qrList[displayValue!!] = (qrList[displayValue] ?: 0) + 1
+                                qrList[displayValue] = (qrList[displayValue] ?: 0) + 1
                             }
                         } else {
-                            displayValue?.let { it1 -> qrList.put(it1, 1) }
+                            displayValue.let { it1 -> qrList.put(it1, 1) }
                         }
                     }
                     callback.onQrCodesDetected(resultFilterList)
+                    if(filteredList.isNotEmpty()){
+                        //Request focus on new barcode detected
+                        cameraXHelper.requestFocus()
+                    }
                 }
             }
         }
@@ -218,7 +223,7 @@ class BarcodeX @JvmOverloads constructor(
     }
 
     fun drawBoundaries(
-        barcodeList: List<XBarcode>,
+        barcodeList: List<BarcodeX>,
     ) {
         val barcodeBoundList = barcodeList.toBoundingBox()
         barcodeBoundingBox.drawBoundingBox(barcodeBoundList)

@@ -3,16 +3,13 @@ package com.hamedrahimvand.sample
 import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
-import com.hamedrahimvand.barcodex.model.XBarcode
-import com.hamedrahimvand.barcodex.model.XBarcode.Companion.FORMAT_CODE_128
-import com.hamedrahimvand.barcodex.model.XBarcode.Companion.FORMAT_QR_CODE
+import com.hamedrahimvand.barcodex.model.BarcodeX
+import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FORMAT_CODE_128
+import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FORMAT_QR_CODE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import kotlinx.android.synthetic.main.activity_barcodex.*
 
@@ -29,10 +26,10 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             Intent(context, BarcodeXActivity::class.java)
     }
 
-    var myBarcodeList: MutableList<XBarcode> = mutableListOf()
+    var myBarcodeList: MutableList<BarcodeX> = mutableListOf()
     var lastNotifyTime = System.currentTimeMillis()
     var barcodeXAnalyzerCallBack = object : BarcodeXAnalyzerCallBack {
-        override fun onQrCodesDetected(qrCodes: List<XBarcode>) {
+        override fun onQrCodesDetected(qrCodes: List<BarcodeX>) {
             //find difference between myBarcodeList and qrCodes by displayValue
             //combine two list
             val tempList = qrCodes + myBarcodeList
@@ -72,6 +69,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
         super.onCreate(savedInstanceState)
         barcodeX.setup(this, this, intArrayOf(FORMAT_CODE_128, FORMAT_QR_CODE))
         barcodeX.autoDrawEnabled = false
+//        barcodeX.threshold = 2
         barcodeX.addAnalyzerCallBack(barcodeXAnalyzerCallBack)
         ibTorch.setOnClickListener {
             toggleTorch()
@@ -116,12 +114,12 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
     @Suppress("DEPRECATION")
     fun beepVibrate() {
         MediaPlayer.create(this, R.raw.beep).start()
-        val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v!!.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            v!!.vibrate(200)
-        }
+//        val v = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator?
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            v!!.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+//        } else {
+//            v!!.vibrate(200)
+//        }
     }
 
 }

@@ -9,7 +9,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import com.hamedrahimvand.barcodex.model.XBarcode
+import com.hamedrahimvand.barcodex.model.BarcodeX
 import com.hamedrahimvand.barcodex.model.XBarcodeMapper
 import java.util.*
 
@@ -89,6 +89,6 @@ class BarcodeXAnalyzer(
 
 interface BarcodeXAnalyzerCallBack {
     fun onNewFrame(w: Int, h: Int) {}
-    fun onQrCodesDetected(qrCodes: List<XBarcode>)
+    fun onQrCodesDetected(qrCodes: List<BarcodeX>)
     fun onQrCodesFailed(exception: Exception)
 } 

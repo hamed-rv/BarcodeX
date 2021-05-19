@@ -2,7 +2,7 @@ package com.hamedrahimvand.barcodex.model
 
 import android.graphics.Rect
 
-data class XBarcode(
+data class BarcodeX(
     var displayValue: String,
     var boundingBox: Rect?,
     var format: Int,
