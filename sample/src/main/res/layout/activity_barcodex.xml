@@ -15,8 +15,8 @@
     <!--        app:layout_constraintLeft_toLeftOf="parent"-->
     <!--        app:layout_constraintRight_toRightOf="parent" />-->
 
-    <com.hamedrahimvand.barcodex.BarcodeX
-        android:id="@+id/barcodeX"
+    <com.hamedrahimvand.barcodex.BarcodeScanner
+        android:id="@+id/barcodeScanner"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:bx_show_dark_frame="true"

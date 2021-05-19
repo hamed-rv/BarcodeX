@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_barcodex.*
  *@author Hamed.Rahimvand
  *@since 6/14/20
  */
-class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
+internal class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
 
     companion object {
         const val BARCODE_SOUND_INTERVAL = 1000
@@ -48,7 +48,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             myBarcodeList = diff.toMutableList()
 
             //draw all due to business logic
-            barcodeX.drawBoundaries(qrCodes)
+            barcodeScanner.drawBoundaries(qrCodes)
             tvCount.text = myBarcodeList.size.toString()
         }
 
@@ -67,17 +67,17 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        barcodeX.setup(this, this, intArrayOf(FORMAT_CODE_128, FORMAT_QR_CODE))
-        barcodeX.autoDrawEnabled = false
+        barcodeScanner.setup(this, this, intArrayOf(FORMAT_CODE_128, FORMAT_QR_CODE))
+        barcodeScanner.autoDrawEnabled = false
 //        barcodeX.threshold = 2
-        barcodeX.addAnalyzerCallBack(barcodeXAnalyzerCallBack)
+        barcodeScanner.addAnalyzerCallBack(barcodeXAnalyzerCallBack)
         ibTorch.setOnClickListener {
             toggleTorch()
         }
     }
 
     private fun toggleTorch() {
-        when (barcodeX.toggleTorch()) {
+        when (barcodeScanner.toggleTorch()) {
             true -> {
                 ibTorch.setImageResource(R.drawable.ic_baseline_flash_off_24)
             }
@@ -97,17 +97,17 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        barcodeX.checkRequestPermissionResult(requestCode)
+        barcodeScanner.checkRequestPermissionResult(requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        barcodeX.checkActivityResult(requestCode, resultCode)
+        barcodeScanner.checkActivityResult(requestCode, resultCode)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        barcodeX.removeAnalyzerCallBack(barcodeXAnalyzerCallBack)
+        barcodeScanner.removeAnalyzerCallBack(barcodeXAnalyzerCallBack)
     }
 
 

@@ -28,7 +28,7 @@ import kotlin.math.abs
  *@author Hamed.Rahimvand
  *@since 6/16/20
  */
-class BarcodeX @JvmOverloads constructor(
+class BarcodeScanner @JvmOverloads constructor(
     context: Context, private val attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
