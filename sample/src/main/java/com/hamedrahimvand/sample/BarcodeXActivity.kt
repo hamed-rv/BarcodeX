@@ -1,4 +1,4 @@
-package com.hamedrahimvand.barcodex
+package com.hamedrahimvand.sample
 
 import android.content.Context
 import android.content.Intent
@@ -9,10 +9,10 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.mlkit.vision.barcode.Barcode
-import com.google.mlkit.vision.barcode.Barcode.FORMAT_CODE_128
-import com.google.mlkit.vision.barcode.Barcode.FORMAT_QR_CODE
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
+import com.hamedrahimvand.barcodex.model.XBarcode
+import com.hamedrahimvand.barcodex.model.XBarcode.Companion.FORMAT_CODE_128
+import com.hamedrahimvand.barcodex.model.XBarcode.Companion.FORMAT_QR_CODE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import kotlinx.android.synthetic.main.activity_barcodex.*
 
@@ -29,10 +29,10 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             Intent(context, BarcodeXActivity::class.java)
     }
 
-    var myBarcodeList: MutableList<Barcode> = mutableListOf()
+    var myBarcodeList: MutableList<XBarcode> = mutableListOf()
     var lastNotifyTime = System.currentTimeMillis()
     var barcodeXAnalyzerCallBack = object : BarcodeXAnalyzerCallBack {
-        override fun onQrCodesDetected(qrCodes: List<Barcode>) {
+        override fun onQrCodesDetected(qrCodes: List<XBarcode>) {
             //find difference between myBarcodeList and qrCodes by displayValue
             //combine two list
             val tempList = qrCodes + myBarcodeList
@@ -51,9 +51,7 @@ class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) {
             myBarcodeList = diff.toMutableList()
 
             //draw all due to business logic
-            barcodeX.drawBoundaries(qrCodes) {
-                getBarcodeBoundingBoxState(it.valueType, it.displayValue ?: "")
-            }
+            barcodeX.drawBoundaries(qrCodes)
             tvCount.text = myBarcodeList.size.toString()
         }
 

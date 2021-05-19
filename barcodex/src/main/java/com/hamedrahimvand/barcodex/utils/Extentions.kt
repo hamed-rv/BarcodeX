@@ -2,21 +2,17 @@ package com.hamedrahimvand.barcodex.utils
 
 import com.google.mlkit.vision.barcode.Barcode
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxModel
-import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
+import com.hamedrahimvand.barcodex.model.XBarcode
+import com.hamedrahimvand.barcodex.model.XBarcodeMapper
 
 /**
  *
  *@author Hamed.Rahimvand
  *@since 1/9/21
  */
-inline fun List<Barcode>.toBoundingBox(getBarcodeBoundingBoxState: (Barcode) -> BarcodeBoundingBoxStates): List<BarcodeBoundingBoxModel> {
-    return this.map {
-        BarcodeBoundingBoxModel(
-            it.boundingBox,
-            it.valueType.toBarcodeType(),
-            it.displayValue ?: "",
-            getBarcodeBoundingBoxState(it)
-        )
+fun List<XBarcode>.toBoundingBox(): List<BarcodeBoundingBoxModel> {
+    return this.map { xbarcode ->
+        XBarcodeMapper().mapToBoundingBox(xbarcode)
     }
 }
 
