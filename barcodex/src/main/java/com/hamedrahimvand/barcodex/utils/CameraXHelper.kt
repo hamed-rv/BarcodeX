@@ -8,6 +8,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.annotation.RestrictTo
 import androidx.camera.core.*
 import androidx.camera.extensions.BeautyPreviewExtender
@@ -18,7 +21,6 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.common.util.concurrent.ListenableFuture
@@ -198,11 +200,53 @@ class CameraXHelper(
     private fun setupPreview(): Preview {
         val previewBuilder = setupPreviewBuilder()
 
+        previewView.afterMeasured {
+            //Request focus on setup view
+            requestFocus()
+            previewView.setOnTouchListener { v, event ->
+                return@setOnTouchListener when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        true
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        //Request focus on touch
+                        requestFocus(event.x, event.y)
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+
         val preview = previewBuilder.build()
         preview.setSurfaceProvider(
             previewView.surfaceProvider
         )
         return preview
+    }
+
+    private var lastFocusTime = 0L
+
+    fun requestFocus(x: Float? = null, y: Float? = null) {
+        if (System.currentTimeMillis() - lastFocusTime < 500) return
+        lastFocusTime = System.currentTimeMillis()
+        val width = if (x == null) 1f else previewView.width.toFloat()
+        val height = if (y == null) 1f else previewView.height.toFloat()
+        val autoFocusPoint = SurfaceOrientedMeteringPointFactory(width, height)
+            .createPoint(x ?: .5f, y ?: .5f)
+        try {
+            camera?.cameraControl?.startFocusAndMetering(
+                FocusMeteringAction.Builder(
+                    autoFocusPoint,
+                    FocusMeteringAction.FLAG_AF
+                ).apply {
+//                    setAutoCancelDuration(1, TimeUnit.SECONDS)
+//                    disableAutoCancel()
+                }.build()
+            )
+        } catch (e: CameraInfoUnavailableException) {
+            Log.d("ERROR", "cannot access camera", e)
+        }
     }
 
     private fun setupPreviewBuilder(): Preview.Builder {
@@ -359,4 +403,15 @@ class CameraXHelper(
     fun shutDown() {
         executor.shutdown()
     }
+}
+
+inline fun View.afterMeasured(crossinline block: () -> Unit) {
+    viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+            if (measuredWidth > 0 && measuredHeight > 0) {
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                block()
+            }
+        }
+    })
 }
