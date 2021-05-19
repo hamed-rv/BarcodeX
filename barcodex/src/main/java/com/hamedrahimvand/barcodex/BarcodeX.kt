@@ -50,6 +50,9 @@ class BarcodeX @JvmOverloads constructor(
     private var cropCenterScan = true
     private var autoDarkFrame = true
 
+    private var defaultLeft = 100
+    private var defaultRight = 120
+
     companion object{
         private val ITERATE_THRESHOLD = 2 //scan iteration to ensure the verified scan
     }
@@ -173,8 +176,8 @@ class BarcodeX @JvmOverloads constructor(
                             false
                         } else {
                             val scaledBound = Rect(it.boundingBox!!).apply {
-                                left = (left * scale.first).toInt()
-                                top = (top * scale.second).toInt()
+                                left = (left * scale.first).toInt() //+ defaultLeft
+                                top = (top * scale.second).toInt() + defaultRight
                                 right = (right * scale.first).toInt()
                                 bottom = (bottom * scale.second).toInt()
                             }
