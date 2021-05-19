@@ -4,5 +4,6 @@
         <!-- Detection speed each x millisecond. Default is 60 -->
         <attr name="bx_show_dark_frame" format="boolean"/>
         <attr name="bx_crop_center" format="boolean"/>
+        <attr name="bx_threshold" format="integer"/>
     </declare-styleable>
 </resources>

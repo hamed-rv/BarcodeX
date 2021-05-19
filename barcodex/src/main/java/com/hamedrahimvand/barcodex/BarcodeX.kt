@@ -47,6 +47,7 @@ class BarcodeX @JvmOverloads constructor(
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
      */
     var autoDrawEnabled = true
+    var threshold = THRESHOLD_DEFAULT
     private var cropCenterScan = true
     private var autoDarkFrame = true
 
@@ -54,9 +55,6 @@ class BarcodeX @JvmOverloads constructor(
         const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
         private var defaultLeft = 100
         private var defaultRight = 120
-
-        var threshold = THRESHOLD_DEFAULT
-
     }
 
     init {
@@ -75,6 +73,8 @@ class BarcodeX @JvmOverloads constructor(
             a.getBoolean(R.styleable.BarcodeX_bx_show_dark_frame, true)
         cropCenterScan =
             a.getBoolean(R.styleable.BarcodeX_bx_crop_center, true)
+        threshold =
+            a.getInt(R.styleable.BarcodeX_bx_threshold, THRESHOLD_DEFAULT)
         a.recycle()
     }
 
