@@ -72,7 +72,7 @@ class BarcodeScanner @JvmOverloads constructor(
     private var cropCenterScan = true
     private var autoDarkFrame = true
 
-    private var defaultRight =  dpToPx(context, 90f)
+    private var defaultRight =  dpToPx(context, 10f)
 
     companion object {
         const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
@@ -191,7 +191,7 @@ class BarcodeScanner @JvmOverloads constructor(
                             val scaledBound = Rect(it.boundingBox!!).apply {
                                 left = (left * scale.first).toInt() //+ defaultLeft
                                 top = (top * scale.second).toInt() + defaultRight
-                                right = (right * scale.first).toInt()
+                                right = (right * scale.first).toInt() - defaultRight
                                 bottom = (bottom * scale.second).toInt()
                             }
                             darkFrame.getCropRect().toRect().contains(scaledBound)
