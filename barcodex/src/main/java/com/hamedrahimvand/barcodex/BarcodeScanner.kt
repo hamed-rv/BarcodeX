@@ -17,6 +17,7 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.hamedrahimvand.barcodex.custom.BarcodeBoundingBox
 import com.hamedrahimvand.barcodex.custom.DarkFrame
 import com.hamedrahimvand.barcodex.model.BarcodeX
+import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FOCUS_NONE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
 import com.hamedrahimvand.barcodex.utils.toBoundingBox
@@ -42,6 +43,25 @@ class BarcodeScanner @JvmOverloads constructor(
     private var scale = 0f to 0f
 
     private val qrList = hashMapOf<String, Int>()// arrayListOf<Pair<Barcode,Int>>()
+
+    /**
+     * Second
+     */
+    var focusIntervalTime = CameraXHelper.DEFAULT_FOCUS_TIME_INTERVAL
+        set(value) {
+            field = value
+            if (::cameraXHelper.isInitialized) {
+                cameraXHelper.focusIntervalTime = value
+            }
+        }
+
+    var focusMode = FOCUS_NONE
+        set(value) {
+            field = value
+            if (::cameraXHelper.isInitialized) {
+                cameraXHelper.focusMode = value
+            }
+        }
 
     /**
      * Draw boundaries automatically, it'll draw all of detected barcode list items without particular conditions.
@@ -98,6 +118,8 @@ class BarcodeScanner @JvmOverloads constructor(
             barcodeXAnalyzerCallback = analyzerCallBack,
             supportedFormats = supportedFormats
         )
+        cameraXHelper.focusIntervalTime = focusIntervalTime
+        cameraXHelper.focusMode = focusMode
         cameraXHelper.requestPermission(activity)
     }
 
@@ -207,7 +229,9 @@ class BarcodeScanner @JvmOverloads constructor(
                     callback.onQrCodesDetected(resultFilterList)
                     if (filteredList.isNotEmpty()) {
                         //Request focus on new barcode detected
-                        cameraXHelper.requestFocus()
+                        if (focusMode == BarcodeX.FOCUS_PER_BARCODE) {
+                            cameraXHelper.requestFocus()
+                        }
                     }
                 }
             }

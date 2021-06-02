@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.hamedrahimvand.barcodex.model.BarcodeBoundingBoxStates
 import com.hamedrahimvand.barcodex.model.BarcodeX
+import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FOCUS_INTERVAL
+import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FOCUS_NONE
 import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FORMAT_CODE_128
 import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FORMAT_QR_CODE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
@@ -70,6 +72,10 @@ internal class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) 
         barcodeScanner.setup(this, this, intArrayOf(FORMAT_CODE_128, FORMAT_QR_CODE))
         barcodeScanner.autoDrawEnabled = false
 //        barcodeX.threshold = 2
+
+        barcodeScanner.focusMode = FOCUS_NONE
+        barcodeScanner.focusIntervalTime = 5
+
         barcodeScanner.addAnalyzerCallBack(barcodeXAnalyzerCallBack)
         ibTorch.setOnClickListener {
             toggleTorch()

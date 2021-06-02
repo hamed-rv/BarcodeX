@@ -39,5 +39,10 @@ data class BarcodeX(
         const val TYPE_GEO = 10
         const val TYPE_CALENDAR_EVENT = 11
         const val TYPE_DRIVER_LICENSE = 12
+
+        const val FOCUS_NONE = 2
+        const val FOCUS_PER_BARCODE = 4
+        const val FOCUS_INTERVAL = 8
+
     }
 }

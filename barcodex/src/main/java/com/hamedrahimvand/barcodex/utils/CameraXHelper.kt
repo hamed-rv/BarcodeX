@@ -25,8 +25,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.barcode.Barcode
+import com.hamedrahimvand.barcodex.model.BarcodeX
 import java.io.File
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -51,11 +53,15 @@ class CameraXHelper(
     private val applicationContext: Context = previewView.context.applicationContext
     private lateinit var cameraSelector: CameraSelector
     private lateinit var barcodeXAnalyzer: BarcodeXAnalyzer
+    var focusMode = BarcodeX.FOCUS_NONE
+
+    var focusIntervalTime = DEFAULT_FOCUS_TIME_INTERVAL
 
     companion object {
         const val TAG = "CameraXExtension"
         const val REQUEST_CAMERA_PERMISSION = 10
         const val REQUEST_PERMISSION_SETTING = 11
+        const val DEFAULT_FOCUS_TIME_INTERVAL = 10L
         const val CAMERA_PERMISSION = Manifest.permission.CAMERA
         val REQUIRED_PERMISSIONS = arrayOf(CAMERA_PERMISSION)
     }
@@ -239,9 +245,13 @@ class CameraXHelper(
                 FocusMeteringAction.Builder(
                     autoFocusPoint,
                     FocusMeteringAction.FLAG_AF
-                ).apply {
-//                    setAutoCancelDuration(1, TimeUnit.SECONDS)
-//                    disableAutoCancel()
+                ).addPoint(autoFocusPoint, FocusMeteringAction.FLAG_AE)
+                    .apply {
+                    if (focusMode == BarcodeX.FOCUS_INTERVAL) {
+                        setAutoCancelDuration(focusIntervalTime, TimeUnit.SECONDS)
+                    } else {
+                        disableAutoCancel()
+                    }
                 }.build()
             )
         } catch (e: CameraInfoUnavailableException) {
