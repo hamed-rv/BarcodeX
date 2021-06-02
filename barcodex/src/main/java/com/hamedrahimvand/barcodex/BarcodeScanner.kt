@@ -20,6 +20,7 @@ import com.hamedrahimvand.barcodex.model.BarcodeX
 import com.hamedrahimvand.barcodex.model.BarcodeX.Companion.FOCUS_NONE
 import com.hamedrahimvand.barcodex.utils.BarcodeXAnalyzerCallBack
 import com.hamedrahimvand.barcodex.utils.CameraXHelper
+import com.hamedrahimvand.barcodex.utils.dpToPx
 import com.hamedrahimvand.barcodex.utils.toBoundingBox
 import java.io.File
 import kotlin.math.abs
@@ -71,10 +72,10 @@ class BarcodeScanner @JvmOverloads constructor(
     private var cropCenterScan = true
     private var autoDarkFrame = true
 
+    private var defaultRight =  dpToPx(context, 90f)
+
     companion object {
         const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
-        private var defaultLeft = 100
-        private var defaultRight = 120
     }
 
     init {

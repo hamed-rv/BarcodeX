@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:bx_show_dark_frame="true"
-        app:bx_crop_center="false"
+        app:bx_crop_center="true"
         />
 
     <ImageButton
