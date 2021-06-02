@@ -73,7 +73,7 @@ internal class BarcodeXActivity : AppCompatActivity(R.layout.activity_barcodex) 
         barcodeScanner.autoDrawEnabled = false
 //        barcodeX.threshold = 2
 
-        barcodeScanner.focusMode = FOCUS_NONE
+        barcodeScanner.focusMode = FOCUS_INTERVAL
         barcodeScanner.focusIntervalTime = 5
 
         barcodeScanner.addAnalyzerCallBack(barcodeXAnalyzerCallBack)

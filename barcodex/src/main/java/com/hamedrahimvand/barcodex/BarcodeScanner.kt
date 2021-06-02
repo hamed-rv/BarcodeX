@@ -73,6 +73,7 @@ class BarcodeScanner @JvmOverloads constructor(
     private var autoDarkFrame = true
 
     private var defaultRight =  dpToPx(context, 10f)
+    private var defaultPadding =  dpToPx(context, 40f)
 
     companion object {
         const val THRESHOLD_DEFAULT = 0 //scan iteration to ensure the verified scan
@@ -194,7 +195,10 @@ class BarcodeScanner @JvmOverloads constructor(
                                 right = (right * scale.first).toInt() - defaultRight
                                 bottom = (bottom * scale.second).toInt()
                             }
-                            darkFrame.getCropRect().toRect().contains(scaledBound)
+                            darkFrame.getCropRect().toRect().apply {
+                                    left = 0 + defaultPadding
+                                right = width - defaultPadding
+                            }.contains(scaledBound)
                         }
                     } else {
                         true
